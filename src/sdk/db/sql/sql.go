@@ -9,7 +9,7 @@ import (
 	"gorm.io/gorm"
 )
 
-var sqlDB *gorm.DB
+var SQLDB *gorm.DB
 
 func ConnectToDb() {
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
@@ -25,5 +25,5 @@ func ConnectToDb() {
 		log.Fatal("Failed Connect To Database")
 	}
 
-	sqlDB = db
+	SQLDB = db
 }
