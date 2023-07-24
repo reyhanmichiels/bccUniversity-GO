@@ -11,6 +11,7 @@ import (
 func init() {
 	conf.LoadEnv()
 	sql.ConnectToDb()
+	sql.Migrate()
 }
 
 func main() {
