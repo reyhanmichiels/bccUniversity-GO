@@ -28,6 +28,8 @@ func (r *rest) Route() {
 			"message": "Api Running",
 		})
 	})
+
+	v1.POST("/regist", r.Registration)
 }
 
 func InjectRest(usecase *usecase.UseCase) Rest {
