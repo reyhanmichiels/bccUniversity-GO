@@ -12,11 +12,18 @@ func SuccessedResponse(c *gin.Context, code int, message string, data interface{
 
 }
 
-func FailedResponse(c *gin.Context, code int, errorMessage error) {
+func FailedResponse(c *gin.Context, code int, message string, err error) {
 
 	c.JSON(code, gin.H{
-		"status": "error",
-		"error":  errorMessage.Error(),
+		"status":  "error",
+		"message": message,
+		"error":   err.Error(),
 	})
 
+}
+
+type ErrorObject struct {
+	Code    int
+	Message string
+	Err     error
 }
