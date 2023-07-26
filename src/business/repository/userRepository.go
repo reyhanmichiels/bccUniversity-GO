@@ -10,6 +10,7 @@ import (
 
 type UserRepository interface {
 	CreateUser(inputUser entity.User) interface{}
+	FindUserByEmail(email string) (entity.User, error)
 }
 
 type userRepository struct {
@@ -37,5 +38,13 @@ func (userRepository *userRepository) CreateUser(inputUser entity.User) interfac
 	}
 
 	return nil
+
+}
+
+func (userRepository *userRepository) FindUserByEmail(email string) (entity.User, error) {
+
+	var user entity.User
+	err := userRepository.db.First(&user, "email = ?", email)
+	return user, err.Error
 
 }

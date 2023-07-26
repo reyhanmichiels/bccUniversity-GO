@@ -27,8 +27,48 @@ func (rest *rest) Registration(c *gin.Context) {
 		errorObject := errorObject.(library.ErrorObject)
 		library.FailedResponse(c, errorObject.Code, errorObject.Message, errorObject.Err)
 		return
-		
+
 	}
 
 	library.SuccessedResponse(c, http.StatusCreated, "successes registration new user!", createdUser)
+
+}
+
+func (rest *rest) Login(c *gin.Context) {
+
+	//binding user request
+	var userFromRequest entity.LoginUser
+	err := c.ShouldBindJSON(&userFromRequest)
+	if err != nil {
+
+		library.FailedResponse(c, http.StatusConflict, "send the correct JSON request", err)
+		return
+
+	}
+
+	//verify credential
+	loginUser, errObject := rest.uc.User.VerifyCredential(userFromRequest)
+	if errObject != nil {
+
+		errObject := errObject.(library.ErrorObject)
+		library.FailedResponse(c, errObject.Code, errObject.Message, errObject.Err)
+		return
+
+	}
+
+	//generate jwt token
+	token, errObject := rest.uc.User.GenerateJWTToken(loginUser)
+	if errObject != nil {
+
+		errObject := errObject.(library.ErrorObject)
+		library.FailedResponse(c, errObject.Code, errObject.Message, errObject.Err)
+		return
+
+	}
+
+	//set token to cookie
+	rest.uc.User.SetToken(c, token)
+
+	library.SuccessedResponse(c, http.StatusOK, "successes login", nil)
+
 }

@@ -30,6 +30,8 @@ func (r *rest) Route() {
 	})
 
 	v1.POST("/regist", r.Registration)
+
+	v1.POST("/login", r.Login)
 }
 
 func InjectRest(usecase *usecase.UseCase) Rest {
