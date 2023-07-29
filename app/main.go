@@ -12,6 +12,7 @@ func init() {
 	conf.LoadEnv()
 	sql.ConnectToDb()
 	sql.Migrate()
+	sql.Seed()
 }
 
 func main() {
