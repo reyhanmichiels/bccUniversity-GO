@@ -2,6 +2,7 @@ package rest
 
 import (
 	"bcc-university/src/business/usecase"
+	"bcc-university/src/sdk/middleware"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -32,6 +33,8 @@ func (r *rest) Route() {
 	v1.POST("/regist", r.Registration)
 
 	v1.POST("/login", r.Login)
+
+	v1.GET("/user/student-number", middleware.AuthJWT, r.ClaimStudentNumber)
 }
 
 func InjectRest(usecase *usecase.UseCase) Rest {

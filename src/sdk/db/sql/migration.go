@@ -11,7 +11,7 @@ func Migrate() {
 	SQLDB.Migrator().DropTable("students")
 	SQLDB.Migrator().DropTable("courses")
 	SQLDB.Migrator().DropTable("classes")
-	SQLDB.Migrator().DropTable("users_classes")
+	SQLDB.Migrator().DropTable("user_classes")
 
 	//migrate
 	SQLDB.AutoMigrate(&entity.User{})

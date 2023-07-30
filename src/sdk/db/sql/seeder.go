@@ -69,6 +69,7 @@ func Seed() {
 	user := entity.User{
 		Name:     "admin",
 		Username: "admin",
+		Role:     "admin",
 		Email:    "admin@gmail.com",
 		Password: string(pass),
 	}
@@ -101,19 +102,19 @@ func Seed() {
 	//student
 	student := entity.Student{
 		User_id:           2,
-		Student_id_number: "temp",
+		Student_id_number: "210101",
 	}
 	SQLDB.Create(&student)
 
 	student = entity.Student{
 		User_id:           3,
-		Student_id_number: "temp",
+		Student_id_number: "210102",
 	}
 	SQLDB.Create(&student)
 
 	student = entity.Student{
 		User_id:           4,
-		Student_id_number: "temp",
+		Student_id_number: "210103",
 	}
 	SQLDB.Create(&student)
 
