@@ -18,6 +18,7 @@ type UserUseCase interface {
 	VerifyCredential(inputUser entity.LoginUser) (entity.User, interface{})
 	GenerateJWTToken(loginUser entity.User) (string, interface{})
 	SetToken(c *gin.Context, token string)
+	EditProfile(inputUser entity.EditProfileBind, loginUser entity.User) (entity.ResponseUser, interface{})
 }
 
 type userUseCase struct {
@@ -131,5 +132,30 @@ func (userUseCase *userUseCase) SetToken(c *gin.Context, token string) {
 
 	c.SetSameSite(http.SameSiteLaxMode)
 	c.SetCookie("jwt-token", token, (3600 * 24), "", "", false, true)
+
+}
+
+func (userUseCase *userUseCase) EditProfile(inputUser entity.EditProfileBind, loginUser entity.User) (entity.ResponseUser, interface{}) {
+
+	err := userUseCase.userRepository.UpdateUser(&loginUser, inputUser)
+	if err != nil {
+
+		errorObject := library.ErrorObject{
+			Code:    http.StatusInternalServerError,
+			Message: "failed to update user",
+			Err:     err,
+		}
+		return entity.ResponseUser{}, errorObject
+
+	}
+
+	userResponse := entity.ResponseUser{
+		Name:     loginUser.Name,
+		Email:    loginUser.Email,
+		Username: loginUser.Username,
+		Role:     loginUser.Role,
+	}
+
+	return userResponse, nil
 
 }

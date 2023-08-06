@@ -11,6 +11,7 @@ import (
 type UserRepository interface {
 	CreateUser(inputUser entity.User) interface{}
 	FindUserByEmail(email string) (entity.User, error)
+	UpdateUser(updatedUser *entity.User, updateData interface{}) error
 }
 
 type userRepository struct {
@@ -46,5 +47,17 @@ func (userRepository *userRepository) FindUserByEmail(email string) (entity.User
 	var user entity.User
 	err := userRepository.db.First(&user, "email = ?", email)
 	return user, err.Error
+
+}
+
+func (userRepository *userRepository) UpdateUser(updatedUser *entity.User, updateData interface{}) error {
+
+	err := userRepository.db.Model(updatedUser).Updates(updateData).Error
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 
 }

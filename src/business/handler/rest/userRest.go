@@ -72,3 +72,35 @@ func (rest *rest) Login(c *gin.Context) {
 	library.SuccessedResponse(c, http.StatusOK, "successes login", nil)
 
 }
+
+func (rest *rest) EditAccount(c *gin.Context) {
+
+	var inputUser entity.EditProfileBind
+
+	err := c.ShouldBindJSON(&inputUser)
+	if err != nil {
+
+		library.FailedResponse(c, http.StatusConflict, "failed to bind input", err)
+		return
+
+	}
+
+	loginUser, ok := c.Get("user")
+	if !ok {
+
+		library.FailedResponse(c, http.StatusInternalServerError, "failed to generate login user", nil)
+
+	}
+
+	responseUser, errObject := rest.uc.User.EditProfile(inputUser, loginUser.(entity.User))
+	if errObject != nil {
+
+		errObject := errObject.(library.ErrorObject)
+		library.FailedResponse(c, errObject.Code, errObject.Message, errObject.Err)
+		return
+
+	}
+
+	library.SuccessedResponse(c, http.StatusAccepted, "successfully edited", responseUser)
+
+}

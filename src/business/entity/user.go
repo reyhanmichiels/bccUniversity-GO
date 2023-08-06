@@ -30,3 +30,14 @@ type LoginUser struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }
+
+type ResponseUser struct {
+	Name     string `json:"name"`
+	Username string `json:"username"`
+	Email    string `json:"email"`
+	Role     string `json:"role"`
+}
+
+type EditProfileBind struct {
+	Username string `json:"username" binding:"required"`
+}
