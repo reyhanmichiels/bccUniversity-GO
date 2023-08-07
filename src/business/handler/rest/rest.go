@@ -37,6 +37,9 @@ func (r *rest) Route() {
 	v1.GET("/user/student-number", middleware.AuthJWT, r.ClaimStudentNumber)
 
 	v1.POST("/user", middleware.AuthJWT, r.EditAccount)
+
+	v1.GET("/classes", middleware.AuthJWT, r.GetAllClass)
+
 }
 
 func InjectRest(usecase *usecase.UseCase) Rest {

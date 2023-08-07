@@ -9,3 +9,9 @@ type Class struct {
 	Participant int     `json:"participant" gorm:"type:int;default:0"`
 	Users       []*User `json:"users" gorm:"many2many:user_classes"`
 }
+
+type ClassResponse struct {
+	Name        string `json:"name"`
+	Course_id   uint   `json:"course_id"`
+	Participant int    `json:"participant"`
+}

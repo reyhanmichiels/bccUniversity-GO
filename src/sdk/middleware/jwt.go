@@ -3,7 +3,6 @@ package middleware
 import (
 	"bcc-university/src/business/entity"
 	"bcc-university/src/sdk/db/sql"
-	"bcc-university/src/sdk/library"
 	"fmt"
 	"net/http"
 	"os"
@@ -19,7 +18,11 @@ func AuthJWT(c *gin.Context) {
 	tokenString, err := c.Cookie("jwt-token")
 	if err != nil {
 
-		library.FailedResponse(c, http.StatusUnauthorized, "unauthorized", err)
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+			"status":  "error",
+			"message": "unauthorized",
+			"error":   err.Error(),
+		})
 		return
 
 	}
@@ -41,7 +44,11 @@ func AuthJWT(c *gin.Context) {
 
 	if !ok && !token.Valid {
 
-		library.FailedResponse(c, http.StatusUnauthorized, "unauthorized", err)
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+			"status":  "error",
+			"message": "unauthorized",
+			"error":   err.Error(),
+		})
 		return
 
 	}
@@ -49,7 +56,11 @@ func AuthJWT(c *gin.Context) {
 	//check expired
 	if float64(time.Now().Unix()) > claims["exp"].(float64) {
 
-		library.FailedResponse(c, http.StatusUnauthorized, "your session has been expired", nil)
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+			"status":  "error",
+			"message": "your session has been expired",
+			"error":   nil,
+		})
 		return
 
 	}
