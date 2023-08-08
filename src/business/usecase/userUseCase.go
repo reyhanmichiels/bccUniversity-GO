@@ -15,9 +15,9 @@ import (
 )
 
 type UserUseCase interface {
-	RegistrationUseCase(inputUser entity.RegistBind) (entity.RegistApi, interface{})
+	RegistrationUseCase(userInput entity.RegistBind) (entity.RegistApi, interface{})
 	LoginUseCase(userInput entity.LoginBind, c *gin.Context) interface{}
-	EditProfile(inputUser entity.EditProfileBind, loginUser entity.User) (entity.ResponseUser, interface{})
+	EditAccountUseCase(userInput entity.EditAccountBind, loginUser entity.User) (entity.UserApi, interface{})
 	AddUserToClassUseCase(loginUser entity.User, classCode string) interface{}
 	DropClassUseCase(loginUser entity.User, classId uint) interface{}
 }
@@ -139,28 +139,28 @@ func (userUseCase *userUseCase) LoginUseCase(userInput entity.LoginBind, c *gin.
 
 }
 
-func (userUseCase *userUseCase) EditProfile(inputUser entity.EditProfileBind, loginUser entity.User) (entity.ResponseUser, interface{}) {
+func (userUseCase *userUseCase) EditAccountUseCase(userInput entity.EditAccountBind, loginUser entity.User) (entity.UserApi, interface{}) {
 
-	err := userUseCase.userRepository.UpdateUser(&loginUser, inputUser)
+	err := userUseCase.userRepository.UpdateUser(&loginUser, userInput)
 	if err != nil {
 
-		errorObject := library.ErrorObject{
+		errObject := library.ErrorObject{
 			Code:    http.StatusInternalServerError,
 			Message: "failed to update user",
 			Err:     err,
 		}
-		return entity.ResponseUser{}, errorObject
+		return entity.UserApi{}, errObject
 
 	}
 
-	userResponse := entity.ResponseUser{
+	userApi := entity.UserApi{
 		Name:     loginUser.Name,
 		Email:    loginUser.Email,
 		Username: loginUser.Username,
 		Role:     loginUser.Role,
 	}
 
-	return userResponse, nil
+	return userApi, nil
 
 }
 

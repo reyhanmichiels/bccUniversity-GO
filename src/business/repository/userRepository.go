@@ -10,7 +10,7 @@ type UserRepository interface {
 	CreateUser(user *entity.User) error
 	FindUserByEmail(email string) (entity.User, error)
 	FindUserByCondition(user interface{}, condition string, value interface{}) error
-	UpdateUser(updatedUser *entity.User, updateData interface{}) error
+	UpdateUser(user *entity.User, updateData interface{}) error
 	AddUserToClass(user *entity.User, class *entity.Class)
 	DropUserFromClass(user *entity.User, class *entity.Class)
 }
@@ -58,12 +58,14 @@ func (userRepository *userRepository) FindUserByEmail(email string) (entity.User
 
 }
 
-func (userRepository *userRepository) UpdateUser(updatedUser *entity.User, updateData interface{}) error {
+func (userRepository *userRepository) UpdateUser(user *entity.User, updateData interface{}) error {
 
-	err := userRepository.db.Model(updatedUser).Updates(updateData).Error
+	err := userRepository.db.Model(user).Updates(updateData).Error
 
 	if err != nil {
+
 		return err
+
 	}
 
 	return nil

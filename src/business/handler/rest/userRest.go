@@ -63,9 +63,9 @@ func (rest *rest) Login(c *gin.Context) {
 
 func (rest *rest) EditAccount(c *gin.Context) {
 
-	var inputUser entity.EditProfileBind
+	var userInput entity.EditAccountBind
 
-	err := c.ShouldBindJSON(&inputUser)
+	err := c.ShouldBindJSON(&userInput)
 	if err != nil {
 
 		library.FailedResponse(c, http.StatusConflict, "failed to bind input", err)
@@ -80,7 +80,7 @@ func (rest *rest) EditAccount(c *gin.Context) {
 
 	}
 
-	responseUser, errObject := rest.uc.User.EditProfile(inputUser, loginUser.(entity.User))
+	userApi, errObject := rest.uc.User.EditAccountUseCase(userInput, loginUser.(entity.User))
 	if errObject != nil {
 
 		errObject := errObject.(library.ErrorObject)
@@ -89,7 +89,7 @@ func (rest *rest) EditAccount(c *gin.Context) {
 
 	}
 
-	library.SuccessedResponse(c, http.StatusAccepted, "successfully edited", responseUser)
+	library.SuccessedResponse(c, http.StatusAccepted, "successfully edited", userApi)
 
 }
 
