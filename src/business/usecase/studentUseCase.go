@@ -11,7 +11,7 @@ import (
 )
 
 type StudentUseCase interface {
-	ClaimStudentNumber(loginUser entity.User) (entity.StudentResponse, interface{})
+	ClaimStudentNumberUseCase(loginUser entity.User) (entity.ClaimStudentNumberApi, interface{})
 }
 
 type studentUseCase struct {
@@ -24,7 +24,7 @@ func NewStudentUseCase(studentRepository repository.StudentRepository) StudentUs
 	}
 }
 
-func (studentUseCase *studentUseCase) ClaimStudentNumber(loginUser entity.User) (entity.StudentResponse, interface{}) {
+func (studentUseCase *studentUseCase) ClaimStudentNumberUseCase(loginUser entity.User) (entity.ClaimStudentNumberApi, interface{}) {
 
 	//validate if user has student number
 	if len(loginUser.Student.Student_id_number) != 0 {
@@ -32,24 +32,14 @@ func (studentUseCase *studentUseCase) ClaimStudentNumber(loginUser entity.User) 
 		errorObject := library.ErrorObject{
 			Code:    http.StatusBadRequest,
 			Message: "you already have student number",
-			Err:     errors.New("this endpoint only can called for student who doesnt have student number"),
+			Err:     errors.New("this endpoint only can be called for student who doesnt have student number"),
 		}
-		return entity.StudentResponse{}, errorObject
+		return entity.ClaimStudentNumberApi{}, errorObject
 
 	}
 
 	//get last student number
-	lastStudentNumber, err := studentUseCase.studentRepository.GetLastStudentNumber()
-	if err != nil {
-
-		errorObject := library.ErrorObject{
-			Code:    http.StatusInternalServerError,
-			Message: "failed to get last student number",
-			Err:     err,
-		}
-		return entity.StudentResponse{}, errorObject
-
-	}
+	lastStudentNumber := studentUseCase.studentRepository.GetLastStudentNumber()
 
 	//generate new student number
 	var newStudentNumber string
@@ -62,12 +52,12 @@ func (studentUseCase *studentUseCase) ClaimStudentNumber(loginUser entity.User) 
 	idNumber, err := strconv.Atoi(lastStudentNumber[4:])
 	if err != nil {
 
-		errorObject := library.ErrorObject{
+		errObject := library.ErrorObject{
 			Code:    http.StatusBadRequest,
 			Message: "failed covert string to number",
 			Err:     err,
 		}
-		return entity.StudentResponse{}, errorObject
+		return entity.ClaimStudentNumberApi{}, errObject
 
 	}
 
@@ -78,12 +68,12 @@ func (studentUseCase *studentUseCase) ClaimStudentNumber(loginUser entity.User) 
 		batchNumber, err := strconv.Atoi(lastStudentNumber[2:4])
 		if err != nil {
 
-			errorObject := library.ErrorObject{
+			errObject := library.ErrorObject{
 				Code:    http.StatusBadRequest,
 				Message: "failed covert string to number",
 				Err:     err,
 			}
-			return entity.StudentResponse{}, errorObject
+			return entity.ClaimStudentNumberApi{}, errObject
 
 		}
 
@@ -126,15 +116,15 @@ func (studentUseCase *studentUseCase) ClaimStudentNumber(loginUser entity.User) 
 	err = studentUseCase.studentRepository.CreateStudent(student)
 	if err != nil {
 
-		errorObject := library.ErrorObject{
+		errObject := library.ErrorObject{
 			Code:    http.StatusInternalServerError,
 			Message: "failed to make new Student",
 			Err:     err,
 		}
-		return entity.StudentResponse{}, errorObject
+		return entity.ClaimStudentNumberApi{}, errObject
 
 	}
 
-	return entity.StudentResponse{Student_id_number: newStudentNumber}, nil
+	return entity.ClaimStudentNumberApi{Student_id_number: newStudentNumber}, nil
 
 }

@@ -13,7 +13,7 @@ func (rest *rest) ClaimStudentNumber(c *gin.Context) {
 	loginUser, _ := c.Get("user")
 
 	//generate student number
-	student, errObject := rest.uc.Student.ClaimStudentNumber(loginUser.(entity.User))
+	student, errObject := rest.uc.Student.ClaimStudentNumberUseCase(loginUser.(entity.User))
 	if errObject != nil {
 
 		errObject := errObject.(library.ErrorObject)

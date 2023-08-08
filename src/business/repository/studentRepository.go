@@ -7,7 +7,7 @@ import (
 )
 
 type StudentRepository interface {
-	GetLastStudentNumber() (string, error)
+	GetLastStudentNumber() string
 	CreateStudent(student entity.Student) error
 }
 
@@ -21,19 +21,20 @@ func NewStudentRepository(db *gorm.DB) StudentRepository {
 	}
 }
 
-func (studentRepository *studentRepository) GetLastStudentNumber() (string, error) {
+func (studentRepository *studentRepository) GetLastStudentNumber() string {
 
 	var student entity.Student
-	err := studentRepository.db.Last(&student)
+	
+	studentRepository.db.Last(&student)
 
-	return student.Student_id_number, err.Error
+	return student.Student_id_number
 
 }
 
 func (studentRepository *studentRepository) CreateStudent(student entity.Student) error {
 
-	err := studentRepository.db.Create(&student)
+	err := studentRepository.db.Create(&student).Error
 
-	return err.Error
+	return err
 
 }

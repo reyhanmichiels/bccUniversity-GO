@@ -8,6 +8,6 @@ type Student struct {
 	Student_id_number string `json:"student_id_number" gorm:"type:varchar(20)"`
 }
 
-type StudentResponse struct {
+type ClaimStudentNumberApi struct {
 	Student_id_number string `json:"student_id_number"`
 }
