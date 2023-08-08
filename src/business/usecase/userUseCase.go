@@ -183,7 +183,7 @@ func (userUseCase *userUseCase) AddUserToClassUseCase(loginUser entity.User, cla
 
 	var targetClass entity.Class
 
-	err := userUseCase.classRepository.ELFindClassByClassCode(&targetClass, "class_code = ?", classCode)
+	err := userUseCase.classRepository.ELFindClassByCondition(&targetClass, "class_code = ?", classCode)
 	if err != nil {
 
 		errObject := library.ErrorObject{
@@ -249,7 +249,7 @@ func (userUseCase *userUseCase) DropClassUseCase(loginUser entity.User, classId 
 
 	//validate if the class exist
 	var class entity.Class
-	err := userUseCase.classRepository.FindClassById(&class, classId)
+	err := userUseCase.classRepository.FindClassByCondition(&class, "id = ?", classId)
 	if err != nil {
 
 		errObject := library.ErrorObject{

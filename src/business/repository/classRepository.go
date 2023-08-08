@@ -8,8 +8,8 @@ import (
 
 type ClassRepository interface {
 	FindAllClass(allClass interface{}) error
-	ELFindClassByClassCode(class interface{}, value string, condition interface{}) error
-	FindClassById(class *entity.Class, classId uint) error
+	ELFindClassByCondition(class interface{}, condition string, value interface{}) error
+	FindClassByCondition(class interface{}, condition string, value interface{}) error
 }
 
 type classRepository struct {
@@ -37,9 +37,9 @@ func (classRepository *classRepository) FindAllClass(allClass interface{}) error
 
 }
 
-func (classRepository *classRepository) ELFindClassByClassCode(class interface{}, value string, condition interface{}) error {
+func (classRepository *classRepository) ELFindClassByCondition(class interface{}, condition string, value interface{}) error {
 
-	err := classRepository.db.Model(&entity.Class{}).Preload("Course").First(class, value, condition).Error
+	err := classRepository.db.Model(&entity.Class{}).Preload("Course").First(class, condition, value).Error
 	if err != nil {
 
 		return err
@@ -50,9 +50,9 @@ func (classRepository *classRepository) ELFindClassByClassCode(class interface{}
 
 }
 
-func (classRepository *classRepository) FindClassById(class *entity.Class, classId uint) error {
+func (classRepository *classRepository) FindClassByCondition(class interface{}, condition string, value interface{}) error {
 
-	err := classRepository.db.First(class, classId).Error
+	err := classRepository.db.First(class, condition, value).Error
 	if err != nil {
 
 		return err
