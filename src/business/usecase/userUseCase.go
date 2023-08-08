@@ -166,9 +166,24 @@ func (userUseCase *userUseCase) EditAccountUseCase(userInput entity.EditAccountB
 
 func (userUseCase *userUseCase) AddUserToClassUseCase(loginUser entity.User, classCode string) interface{} {
 
+	//validate if user a student
+
+	if loginUser.Student.Student_id_number == "" {
+
+		errObject := library.ErrorObject{
+			Code:    http.StatusUnauthorized,
+			Message: "you are not student",
+			Err:     errors.New("this endpoint only can be called by student"),
+		}
+		return errObject
+
+	}
+
+	//validate if the class exist
+
 	var targetClass entity.Class
 
-	err := userUseCase.classRepository.ELFindClassByClassCode(&targetClass, classCode)
+	err := userUseCase.classRepository.ELFindClassByClassCode(&targetClass, "class_code = ?", classCode)
 	if err != nil {
 
 		errObject := library.ErrorObject{

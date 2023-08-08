@@ -8,7 +8,7 @@ import (
 
 type ClassRepository interface {
 	FindAllClass(allClass interface{}) error
-	ELFindClassByClassCode(inputClass *entity.Class, classCode string) error
+	ELFindClassByClassCode(class interface{}, value string, condition interface{}) error
 	FindClassById(class *entity.Class, classId uint) error
 }
 
@@ -28,18 +28,22 @@ func (classRepository *classRepository) FindAllClass(allClass interface{}) error
 
 	err := classRepository.db.Model(&entity.Class{}).Find(allClass).Error
 	if err != nil {
+
 		return err
+
 	}
 
 	return nil
 
 }
 
-func (classRepository *classRepository) ELFindClassByClassCode(inputClass *entity.Class, classCode string) error {
+func (classRepository *classRepository) ELFindClassByClassCode(class interface{}, value string, condition interface{}) error {
 
-	err := classRepository.db.Model(&entity.Class{}).Preload("Course").First(inputClass, "class_code = ?", classCode).Error
+	err := classRepository.db.Model(&entity.Class{}).Preload("Course").First(class, value, condition).Error
 	if err != nil {
+
 		return err
+
 	}
 
 	return nil
@@ -50,7 +54,9 @@ func (classRepository *classRepository) FindClassById(class *entity.Class, class
 
 	err := classRepository.db.First(class, classId).Error
 	if err != nil {
+
 		return err
+
 	}
 
 	return nil

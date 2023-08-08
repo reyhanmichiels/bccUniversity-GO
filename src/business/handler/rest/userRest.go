@@ -63,7 +63,7 @@ func (rest *rest) Login(c *gin.Context) {
 
 func (rest *rest) EditAccount(c *gin.Context) {
 
-	var userInput entity.EditAccountBind
+var userInput entity.EditAccountBind
 
 	err := c.ShouldBindJSON(&userInput)
 	if err != nil {
