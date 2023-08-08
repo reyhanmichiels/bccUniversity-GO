@@ -15,7 +15,7 @@ import (
 )
 
 type UserUseCase interface {
-	CreateUser(inputUser entity.CreateUser) (entity.UserRegistResponse, interface{})
+	RegistrationUseCase(inputUser entity.RegistBind) (entity.RegistApi, interface{})
 	VerifyCredential(inputUser entity.LoginUser) (entity.User, interface{})
 	GenerateJWTToken(loginUser entity.User) (string, interface{})
 	SetToken(c *gin.Context, token string)
@@ -36,42 +36,49 @@ func NewUserUseCase(userRepository repository.UserRepository, classRepository re
 	}
 }
 
-func (userUseCase *userUseCase) CreateUser(inputUser entity.CreateUser) (entity.UserRegistResponse, interface{}) {
+func (userUseCase *userUseCase) RegistrationUseCase(userInput entity.RegistBind) (entity.RegistApi, interface{}) {
 
 	//hash pasword
-	password, err := bcrypt.GenerateFromPassword([]byte(inputUser.Password), 10)
+	password, err := bcrypt.GenerateFromPassword([]byte(userInput.Password), 10)
 	if err != nil {
 
-		errorObject := library.ErrorObject{
+		errObject := library.ErrorObject{
 			Code:    http.StatusInternalServerError,
 			Message: "failed to generate hash password",
 			Err:     err,
 		}
 
-		return entity.UserRegistResponse{}, errorObject
+		return entity.RegistApi{}, errObject
 
 	}
 
 	//create user
-	createdUser := entity.User{
-		Name:     inputUser.Name,
-		Username: inputUser.Username,
-		Email:    inputUser.Email,
+	user := entity.User{
+		Name:     userInput.Name,
+		Username: userInput.Username,
+		Email:    userInput.Email,
 		Password: string(password),
 	}
 
-	errorObject := userUseCase.userRepository.CreateUser(createdUser)
-	if errorObject != nil {
-		return entity.UserRegistResponse{}, errorObject
+	err = userUseCase.userRepository.CreateUser(&user)
+	if err != nil {
+
+		errObject := library.ErrorObject{
+			Code:    http.StatusInternalServerError,
+			Message: "failed to create user",
+			Err:     err,
+		}
+		return entity.RegistApi{}, errObject
+
 	}
 
-	userResponse := entity.UserRegistResponse{
-		Name:     createdUser.Name,
-		Email:    createdUser.Email,
-		Username: createdUser.Username,
+	userApi := entity.RegistApi{
+		Name:     user.Name,
+		Email:    user.Email,
+		Username: user.Username,
 	}
 
-	return userResponse, nil
+	return userApi, nil
 
 }
 

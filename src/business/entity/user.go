@@ -13,14 +13,14 @@ type User struct {
 	Classes   []Class `json:"classes" gorm:"many2many:user_classes"`
 }
 
-type CreateUser struct {
+type RegistBind struct {
 	Name     string `json:"name" binding:"required"`
 	Username string `json:"username" binding:"required"`
 	Email    string `json:"email" binding:"required,email"`
 	Password string `json:"password" binding:"required"`
 }
 
-type UserRegistResponse struct {
+type RegistApi struct {
 	Name     string `json:"name"`
 	Username string `json:"username"`
 	Email    string `json:"email"`

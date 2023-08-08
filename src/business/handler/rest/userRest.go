@@ -12,8 +12,8 @@ import (
 func (rest *rest) Registration(c *gin.Context) {
 
 	//binding user request
-	var userFromRequest entity.CreateUser
-	err := c.ShouldBindJSON(&userFromRequest)
+	var userInput entity.RegistBind
+	err := c.ShouldBindJSON(&userInput)
 	if err != nil {
 
 		library.FailedResponse(c, http.StatusConflict, "send the correct JSON request", err)
@@ -22,16 +22,16 @@ func (rest *rest) Registration(c *gin.Context) {
 	}
 
 	//create new user
-	createdUser, errorObject := rest.uc.User.CreateUser(userFromRequest)
-	if errorObject != nil {
+	createdUser, errObject := rest.uc.User.RegistrationUseCase(userInput)
+	if errObject != nil {
 
-		errorObject := errorObject.(library.ErrorObject)
-		library.FailedResponse(c, errorObject.Code, errorObject.Message, errorObject.Err)
+		errObject := errObject.(library.ErrorObject)
+		library.FailedResponse(c, errObject.Code, errObject.Message, errObject.Err)
 		return
 
 	}
 
-	library.SuccessedResponse(c, http.StatusCreated, "successes registration new user!", createdUser)
+	library.SuccessedResponse(c, http.StatusCreated, "successfully registration new user!", createdUser)
 
 }
 

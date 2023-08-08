@@ -2,14 +2,12 @@ package repository
 
 import (
 	"bcc-university/src/business/entity"
-	"bcc-university/src/sdk/library"
-	"net/http"
 
 	"gorm.io/gorm"
 )
 
 type UserRepository interface {
-	CreateUser(inputUser entity.User) interface{}
+	CreateUser(user *entity.User) error
 	FindUserByEmail(email string) (entity.User, error)
 	UpdateUser(updatedUser *entity.User, updateData interface{}) error
 	AddUserToClass(user *entity.User, class *entity.Class)
@@ -24,19 +22,13 @@ func NewUserRepository(db *gorm.DB) UserRepository {
 	return &userRepository{db: db}
 }
 
-func (userRepository *userRepository) CreateUser(inputUser entity.User) interface{} {
+func (userRepository *userRepository) CreateUser(user *entity.User) error {
 
 	//create user
-	user := userRepository.db.Create(&inputUser)
-	if user.Error != nil {
+	err := userRepository.db.Create(user).Error
+	if err != nil {
 
-		errorObject := library.ErrorObject{
-			Code:    http.StatusInternalServerError,
-			Message: "failed to create user",
-			Err:     user.Error,
-		}
-
-		return errorObject
+		return err
 
 	}
 
