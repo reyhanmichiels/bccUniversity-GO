@@ -21,6 +21,7 @@ type UserUseCase interface {
 	SetToken(c *gin.Context, token string)
 	EditProfile(inputUser entity.EditProfileBind, loginUser entity.User) (entity.ResponseUser, interface{})
 	AddUserToClassUseCase(loginUser entity.User, classCode string) interface{}
+	DropClassUseCase(loginUser entity.User, classId uint) interface{}
 }
 
 type userUseCase struct {
@@ -228,4 +229,48 @@ func (userUseCase *userUseCase) AddUserToClassUseCase(loginUser entity.User, cla
 
 	return nil
 
+}
+
+func (userUseCase *userUseCase) DropClassUseCase(loginUser entity.User, classId uint) interface{} {
+
+	//validate if the class exist
+	var class entity.Class
+	err := userUseCase.classRepository.FindClassById(&class, classId)
+	if err != nil {
+
+		errObject := library.ErrorObject{
+			Code:    http.StatusConflict,
+			Message: "class not found",
+			Err:     err,
+		}
+		return errObject
+
+	}
+
+	//check if user doesn't join the class
+	var userInClass bool
+	for _, v := range loginUser.Classes {
+
+		if v.ID == classId {
+
+			userInClass = true
+			break
+		}
+
+	}
+
+	if !userInClass {
+
+		errObject := library.ErrorObject{
+			Code:    http.StatusConflict,
+			Message: "you don't join the class",
+			Err:     errors.New("wrong class id"),
+		}
+		return errObject
+
+	}
+
+	//drop user from class
+	userUseCase.userRepository.DropUserFromClass(&loginUser, &class)
+	return nil
 }

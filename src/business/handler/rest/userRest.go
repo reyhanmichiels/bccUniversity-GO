@@ -4,6 +4,7 @@ import (
 	"bcc-university/src/business/entity"
 	"bcc-university/src/sdk/library"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -134,5 +135,35 @@ func (rest *rest) AddUserToClass(c *gin.Context) {
 	}
 
 	library.SuccessedResponse(c, http.StatusCreated, "successfully join class", nil)
+
+}
+
+func (rest *rest) DropClass(c *gin.Context) {
+
+	classId, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+
+		library.FailedResponse(c, http.StatusConflict, "failed convert id to int", err)
+		return
+
+	}
+
+	loginUser, ok := c.Get("user")
+	if !ok {
+
+		library.FailedResponse(c, http.StatusInternalServerError, "failed to generate login user", nil)
+
+	}
+
+	errObject := rest.uc.User.DropClassUseCase(loginUser.(entity.User), uint(classId))
+	if errObject != nil {
+
+		errObject := errObject.(library.ErrorObject)
+		library.FailedResponse(c, errObject.Code, errObject.Message, errObject.Err)
+		return
+
+	}
+
+	library.SuccessedResponse(c, http.StatusOK, "successfully drop class", nil)
 
 }

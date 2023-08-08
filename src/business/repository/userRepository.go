@@ -13,6 +13,7 @@ type UserRepository interface {
 	FindUserByEmail(email string) (entity.User, error)
 	UpdateUser(updatedUser *entity.User, updateData interface{}) error
 	AddUserToClass(user *entity.User, class *entity.Class)
+	DropUserFromClass(user *entity.User, class *entity.Class)
 }
 
 type userRepository struct {
@@ -68,6 +69,15 @@ func (userRepository *userRepository) AddUserToClass(user *entity.User, class *e
 	userRepository.db.Model(user).Association("Classes").Append(class)
 
 	class.Participant += 1
+	userRepository.db.Save(class)
+
+}
+
+func (userRepository *userRepository) DropUserFromClass(user *entity.User, class *entity.Class) {
+
+	userRepository.db.Model(user).Association("Classes").Delete(class)
+
+	class.Participant -= 1
 	userRepository.db.Save(class)
 
 }
