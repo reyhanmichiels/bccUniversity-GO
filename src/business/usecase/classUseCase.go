@@ -8,7 +8,7 @@ import (
 )
 
 type ClassUseCase interface {
-	GetAllClassUseCase() ([]entity.ClassResponse, interface{})
+	GetAllClassUseCase() ([]entity.ClassApi, interface{})
 }
 
 type classUseCase struct {
@@ -23,9 +23,9 @@ func NewClassUseCase(classRepository repository.ClassRepository) ClassUseCase {
 
 }
 
-func (classUseCase *classUseCase) GetAllClassUseCase() ([]entity.ClassResponse, interface{}) {
+func (classUseCase *classUseCase) GetAllClassUseCase() ([]entity.ClassApi, interface{}) {
 
-	var allClass []entity.ClassResponse
+	var allClass []entity.ClassApi
 
 	err := classUseCase.classRepository.FindAllClass(&allClass)
 	if err != nil {

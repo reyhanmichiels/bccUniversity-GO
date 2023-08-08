@@ -7,7 +7,7 @@ import (
 )
 
 type ClassRepository interface {
-	FindAllClass(allClass *[]entity.ClassResponse) error
+	FindAllClass(allClass interface{}) error
 	ELFindClassByClassCode(inputClass *entity.Class, classCode string) error
 	FindClassById(class *entity.Class, classId uint) error
 }
@@ -24,9 +24,9 @@ func NewClassRepository(db *gorm.DB) ClassRepository {
 
 }
 
-func (classRepository *classRepository) FindAllClass(allClass *[]entity.ClassResponse) error {
+func (classRepository *classRepository) FindAllClass(allClass interface{}) error {
 
-	err := classRepository.db.Model(&entity.Class{}).Find(&allClass).Error
+	err := classRepository.db.Model(&entity.Class{}).Find(allClass).Error
 	if err != nil {
 		return err
 	}

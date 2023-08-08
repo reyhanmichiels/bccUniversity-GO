@@ -12,8 +12,9 @@ type Class struct {
 	Users       []*User `json:"users" gorm:"many2many:user_classes"`
 }
 
-type ClassResponse struct {
+type ClassApi struct {
 	Name        string `json:"name"`
 	Course_id   uint   `json:"course_id"`
 	Participant int    `json:"participant"`
+	ClassCode   string `json:"class_code"`
 }
