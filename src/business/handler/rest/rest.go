@@ -40,6 +40,8 @@ func (r *rest) Route() {
 
 	v1.GET("/classes", middleware.AuthJWT, r.GetAllClass)
 
+	v1.POST("/user/class", middleware.AuthJWT, r.AddUserToClass)
+
 }
 
 func InjectRest(usecase *usecase.UseCase) Rest {

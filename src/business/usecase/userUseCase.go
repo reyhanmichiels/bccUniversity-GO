@@ -4,6 +4,7 @@ import (
 	"bcc-university/src/business/entity"
 	"bcc-university/src/business/repository"
 	"bcc-university/src/sdk/library"
+	"errors"
 	"net/http"
 	"os"
 	"time"
@@ -19,15 +20,18 @@ type UserUseCase interface {
 	GenerateJWTToken(loginUser entity.User) (string, interface{})
 	SetToken(c *gin.Context, token string)
 	EditProfile(inputUser entity.EditProfileBind, loginUser entity.User) (entity.ResponseUser, interface{})
+	AddUserToClassUseCase(loginUser entity.User, classCode string) interface{}
 }
 
 type userUseCase struct {
-	userRepository repository.UserRepository
+	userRepository  repository.UserRepository
+	classRepository repository.ClassRepository
 }
 
-func NewUserUseCase(userRepository repository.UserRepository) UserUseCase {
+func NewUserUseCase(userRepository repository.UserRepository, classRepository repository.ClassRepository) UserUseCase {
 	return &userUseCase{
-		userRepository: userRepository,
+		userRepository:  userRepository,
+		classRepository: classRepository,
 	}
 }
 
@@ -157,5 +161,71 @@ func (userUseCase *userUseCase) EditProfile(inputUser entity.EditProfileBind, lo
 	}
 
 	return userResponse, nil
+
+}
+
+func (userUseCase *userUseCase) AddUserToClassUseCase(loginUser entity.User, classCode string) interface{} {
+
+	var targetClass entity.Class
+
+	err := userUseCase.classRepository.ELFindClassByClassCode(&targetClass, classCode)
+	if err != nil {
+
+		errObject := library.ErrorObject{
+			Code:    http.StatusConflict,
+			Message: "you have wrong class code",
+			Err:     err,
+		}
+		return errObject
+
+	}
+
+	var userCredit int
+	for _, v := range loginUser.Classes {
+
+		//validate if user already take the class
+		if v.ClassCode == classCode {
+
+			errObject := library.ErrorObject{
+				Code:    http.StatusConflict,
+				Message: "you already take this class",
+				Err:     errors.New("can't take the same class"),
+			}
+			return errObject
+
+		}
+
+		//validate if user doesn't take the same course
+		if v.Course_id == targetClass.Course_id {
+
+			errObject := library.ErrorObject{
+				Code:    http.StatusConflict,
+				Message: "you already take this course",
+				Err:     errors.New("can't take the same course"),
+			}
+			return errObject
+
+		}
+
+		userCredit += v.Course.Credit
+
+	}
+
+	//validate if user has enough credit semester left
+	if userCredit+targetClass.Course.Credit > 24 {
+
+		errObject := library.ErrorObject{
+			Code:    http.StatusConflict,
+			Message: "you don't have enough credit semester",
+			Err:     errors.New("maximum credit is 24"),
+		}
+		return errObject
+
+	}
+
+	//add user to class
+	userUseCase.userRepository.AddUserToClass(&loginUser, &targetClass)
+
+	return nil
 
 }

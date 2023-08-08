@@ -104,3 +104,35 @@ func (rest *rest) EditAccount(c *gin.Context) {
 	library.SuccessedResponse(c, http.StatusAccepted, "successfully edited", responseUser)
 
 }
+
+func (rest *rest) AddUserToClass(c *gin.Context) {
+
+	var userInput entity.AddClassBind
+
+	err := c.ShouldBindJSON(&userInput)
+	if err != nil {
+
+		library.FailedResponse(c, http.StatusConflict, "failed to bind input", err)
+		return
+
+	}
+
+	loginUser, ok := c.Get("user")
+	if !ok {
+
+		library.FailedResponse(c, http.StatusInternalServerError, "failed to generate login user", nil)
+
+	}
+
+	errObject := rest.uc.User.AddUserToClassUseCase(loginUser.(entity.User), userInput.ClassCode)
+	if errObject != nil {
+
+		errObject := errObject.(library.ErrorObject)
+		library.FailedResponse(c, errObject.Code, errObject.Message, errObject.Err)
+		return
+
+	}
+
+	library.SuccessedResponse(c, http.StatusCreated, "successfully join class", nil)
+
+}

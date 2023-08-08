@@ -10,7 +10,7 @@ type UseCase struct {
 
 func InjectUseCase(r *repository.Repository) *UseCase {
 	return &UseCase{
-		User:    NewUserUseCase(r.User),
+		User:    NewUserUseCase(r.User, r.Class),
 		Student: NewStudentUseCase(r.Student),
 		Class:   NewClassUseCase(r.Class),
 	}

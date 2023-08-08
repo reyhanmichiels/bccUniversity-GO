@@ -12,6 +12,7 @@ type UserRepository interface {
 	CreateUser(inputUser entity.User) interface{}
 	FindUserByEmail(email string) (entity.User, error)
 	UpdateUser(updatedUser *entity.User, updateData interface{}) error
+	AddUserToClass(user *entity.User, class *entity.Class)
 }
 
 type userRepository struct {
@@ -59,5 +60,14 @@ func (userRepository *userRepository) UpdateUser(updatedUser *entity.User, updat
 	}
 
 	return nil
+
+}
+
+func (userRepository *userRepository) AddUserToClass(user *entity.User, class *entity.Class) {
+
+	userRepository.db.Model(user).Association("Classes").Append(class)
+
+	class.Participant += 1
+	userRepository.db.Save(class)
 
 }

@@ -4,13 +4,13 @@ import "gorm.io/gorm"
 
 type User struct {
 	gorm.Model
-	Name     string  `json:"name" gorm:"type:varchar(50)"`
-	Username string  `json:"username" gorm:"type:varchar(20)"`
-	Email    string  `json:"email" gorm:"type:varchar(50);unique"`
-	Password string  `json:"password" gorm:"type:varchar(100)"`
-	Role     string  `json:"role" gorm:"type:enum('admin', 'user');default:user"`
-	Student  Student `json:"student"`
-	Classes  []Class `json:"classes" gorm:"many2many:user_classes"`
+	Name      string  `json:"name" gorm:"type:varchar(50)"`
+	Username  string  `json:"username" gorm:"type:varchar(20)"`
+	Email     string  `json:"email" gorm:"type:varchar(50);unique"`
+	Password  string  `json:"password" gorm:"type:varchar(100)"`
+	Role      string  `json:"role" gorm:"type:enum('admin', 'user');default:user"`
+	Student   Student `json:"student"`
+	Classes   []Class `json:"classes" gorm:"many2many:user_classes"`
 }
 
 type CreateUser struct {
@@ -40,4 +40,8 @@ type ResponseUser struct {
 
 type EditProfileBind struct {
 	Username string `json:"username" binding:"required"`
+}
+
+type AddClassBind struct {
+	ClassCode string `json:"class_code" binding:"required"`
 }

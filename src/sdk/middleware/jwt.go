@@ -68,7 +68,7 @@ func AuthJWT(c *gin.Context) {
 	//set login user
 	var user entity.User
 
-	sql.SQLDB.Model(&entity.User{}).Preload("Student").First(&user, claims["user_id"])
+	sql.SQLDB.Model(&entity.User{}).Preload("Student").Preload("Classes").First(&user, claims["user_id"])
 	c.Set("user", user)
 
 	c.Next()

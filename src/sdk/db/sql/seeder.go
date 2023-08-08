@@ -2,6 +2,7 @@ package sql
 
 import (
 	"bcc-university/src/business/entity"
+	"bcc-university/src/sdk/library"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -29,37 +30,50 @@ func Seed() {
 
 	//classes
 	class := entity.Class{
-		Name:      "Pemrograman Web Lanjut A",
-		Course_id: 1,
+		Name:        "Pemrograman Web Lanjut A",
+		Course_id:   1,
+		ClassCode:   library.GenerateClassCode("Pemrograman Web Lanjut A"),
+		Participant: 2,
 	}
 	SQLDB.Create(&class)
 
 	class = entity.Class{
-		Name:      "Pemrograman Web Lanjut B",
-		Course_id: 1,
+		Name:        "Pemrograman Web Lanjut B",
+		Course_id:   1,
+		ClassCode:   library.GenerateClassCode("Pemrograman Web Lanjut B"),
+		Participant: 1,
 	}
 	SQLDB.Create(&class)
 
 	class = entity.Class{
-		Name:      "Pemrograman Dasar A",
-		Course_id: 2,
+		Name:        "Pemrograman Dasar A",
+		Course_id:   2,
+		ClassCode:   library.GenerateClassCode("Pemrograman Dasar A"),
+		Participant: 1,
 	}
 	SQLDB.Create(&class)
 
 	class = entity.Class{
-		Name:      "Pemrograman Dasar B",
-		Course_id: 2,
-	}
-	SQLDB.Create(&class)
-	class = entity.Class{
-		Name:      "Pemrograman Lanjut A",
-		Course_id: 3,
+		Name:        "Pemrograman Dasar B",
+		Course_id:   2,
+		ClassCode:   library.GenerateClassCode("Pemrograman Dasar B"),
+		Participant: 2,
 	}
 	SQLDB.Create(&class)
 
 	class = entity.Class{
-		Name:      "Pemrograman Lanjut B",
-		Course_id: 3,
+		Name:        "Pemrograman Lanjut A",
+		Course_id:   3,
+		ClassCode:   library.GenerateClassCode("Pemrograman Lanjut A"),
+		Participant: 2,
+	}
+	SQLDB.Create(&class)
+
+	class = entity.Class{
+		Name:        "Pemrograman Lanjut B",
+		Course_id:   3,
+		ClassCode:   library.GenerateClassCode("Pemrograman Lanjut B"),
+		Participant: 1,
 	}
 	SQLDB.Create(&class)
 
