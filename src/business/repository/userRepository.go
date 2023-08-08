@@ -9,6 +9,7 @@ import (
 type UserRepository interface {
 	CreateUser(user *entity.User) error
 	FindUserByEmail(email string) (entity.User, error)
+	FindUserByCondition(user interface{}, condition string, value interface{}) error
 	UpdateUser(updatedUser *entity.User, updateData interface{}) error
 	AddUserToClass(user *entity.User, class *entity.Class)
 	DropUserFromClass(user *entity.User, class *entity.Class)
@@ -26,6 +27,19 @@ func (userRepository *userRepository) CreateUser(user *entity.User) error {
 
 	//create user
 	err := userRepository.db.Create(user).Error
+	if err != nil {
+
+		return err
+
+	}
+
+	return nil
+
+}
+
+func (userRepository *userRepository) FindUserByCondition(user interface{}, condition string, value interface{}) error {
+
+	err := userRepository.db.Model(&entity.User{}).First(user, condition, value).Error
 	if err != nil {
 
 		return err

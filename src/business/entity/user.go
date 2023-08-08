@@ -26,7 +26,7 @@ type RegistApi struct {
 	Email    string `json:"email"`
 }
 
-type LoginUser struct {
+type LoginBind struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }

@@ -16,9 +16,7 @@ import (
 
 type UserUseCase interface {
 	RegistrationUseCase(inputUser entity.RegistBind) (entity.RegistApi, interface{})
-	VerifyCredential(inputUser entity.LoginUser) (entity.User, interface{})
-	GenerateJWTToken(loginUser entity.User) (string, interface{})
-	SetToken(c *gin.Context, token string)
+	LoginUseCase(userInput entity.LoginBind, c *gin.Context) interface{}
 	EditProfile(inputUser entity.EditProfileBind, loginUser entity.User) (entity.ResponseUser, interface{})
 	AddUserToClassUseCase(loginUser entity.User, classCode string) interface{}
 	DropClassUseCase(loginUser entity.User, classId uint) interface{}
@@ -82,10 +80,15 @@ func (userUseCase *userUseCase) RegistrationUseCase(userInput entity.RegistBind)
 
 }
 
-func (userUseCase *userUseCase) VerifyCredential(inputUser entity.LoginUser) (entity.User, interface{}) {
+func (userUseCase *userUseCase) LoginUseCase(userInput entity.LoginBind, c *gin.Context) interface{} {
 
-	//find user by email
-	user, err := userUseCase.userRepository.FindUserByEmail(inputUser.Email)
+	//verify credential
+	user := struct {
+		ID       uint
+		Password string
+	}{}
+
+	err := userUseCase.userRepository.FindUserByCondition(&user, "email = ?", userInput.Email)
 	if err != nil {
 
 		errObject := library.ErrorObject{
@@ -93,12 +96,12 @@ func (userUseCase *userUseCase) VerifyCredential(inputUser entity.LoginUser) (en
 			Message: "user not found",
 			Err:     err,
 		}
-		return entity.User{}, errObject
+		return errObject
 
 	}
 
 	//verify credential
-	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(inputUser.Password))
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(userInput.Password))
 	if err != nil {
 
 		errObject := library.ErrorObject{
@@ -106,20 +109,13 @@ func (userUseCase *userUseCase) VerifyCredential(inputUser entity.LoginUser) (en
 			Message: "invalid password!",
 			Err:     err,
 		}
-		return entity.User{}, errObject
+		return errObject
 
 	}
 
-	return user, nil
-
-}
-
-func (userUseCase *userUseCase) GenerateJWTToken(loginUser entity.User) (string, interface{}) {
-
-	// Create a new token object, specifying signing method and the claims
-	// you would like it to contain.
+	//generate jwt token
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"user_id": loginUser.ID,
+		"user_id": user.ID,
 		"exp":     time.Now().Add(time.Hour * 24).Unix(),
 	})
 
@@ -127,23 +123,19 @@ func (userUseCase *userUseCase) GenerateJWTToken(loginUser entity.User) (string,
 	tokenString, err := token.SignedString([]byte(os.Getenv("JWT_SECRET_TOKEN")))
 	if err != nil {
 
-		errorObject := library.ErrorObject{
+		errObject := library.ErrorObject{
 			Code:    http.StatusInternalServerError,
 			Message: "failed to generate JWT Token",
 			Err:     err,
 		}
-		return "", errorObject
+		return errObject
 
 	}
 
-	return tokenString, nil
-
-}
-
-func (userUseCase *userUseCase) SetToken(c *gin.Context, token string) {
-
 	c.SetSameSite(http.SameSiteLaxMode)
-	c.SetCookie("jwt-token", token, (3600 * 24), "", "", false, true)
+	c.SetCookie("jwt-token", tokenString, (3600 * 24), "", "", false, true)
+
+	return nil
 
 }
 

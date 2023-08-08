@@ -38,8 +38,9 @@ func (rest *rest) Registration(c *gin.Context) {
 func (rest *rest) Login(c *gin.Context) {
 
 	//binding user request
-	var userFromRequest entity.LoginUser
-	err := c.ShouldBindJSON(&userFromRequest)
+	var userInput entity.LoginBind
+
+	err := c.ShouldBindJSON(&userInput)
 	if err != nil {
 
 		library.FailedResponse(c, http.StatusConflict, "send the correct JSON request", err)
@@ -47,8 +48,7 @@ func (rest *rest) Login(c *gin.Context) {
 
 	}
 
-	//verify credential
-	loginUser, errObject := rest.uc.User.VerifyCredential(userFromRequest)
+	errObject := rest.uc.User.LoginUseCase(userInput, c)
 	if errObject != nil {
 
 		errObject := errObject.(library.ErrorObject)
@@ -56,19 +56,6 @@ func (rest *rest) Login(c *gin.Context) {
 		return
 
 	}
-
-	//generate jwt token
-	token, errObject := rest.uc.User.GenerateJWTToken(loginUser)
-	if errObject != nil {
-
-		errObject := errObject.(library.ErrorObject)
-		library.FailedResponse(c, errObject.Code, errObject.Message, errObject.Err)
-		return
-
-	}
-
-	//set token to cookie
-	rest.uc.User.SetToken(c, token)
 
 	library.SuccessedResponse(c, http.StatusOK, "successes login", nil)
 
