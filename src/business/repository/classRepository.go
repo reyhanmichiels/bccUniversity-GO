@@ -12,6 +12,7 @@ type ClassRepository interface {
 	FindClassByCondition(class interface{}, condition string, value interface{}) error
 	CreateClass(class *entity.Class) error
 	Updateclass(class *entity.Class, updateData interface{}) error
+	DeleteClass(class *entity.Class) error
 }
 
 type classRepository struct {
@@ -81,6 +82,19 @@ func (classRepository *classRepository) CreateClass(class *entity.Class) error {
 func (classRepository *classRepository) Updateclass(class *entity.Class, updateData interface{}) error {
 
 	err := classRepository.db.Model(class).Updates(updateData).Error
+	if err != nil {
+
+		return err
+
+	}
+
+	return nil
+
+}
+
+func (classRepository *classRepository) DeleteClass(class *entity.Class) error {
+
+	err := classRepository.db.Delete(class).Error
 	if err != nil {
 
 		return err

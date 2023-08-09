@@ -14,6 +14,7 @@ type ClassUseCase interface {
 	AdmAddUserToClassUseCase(loginUser entity.User, classId uint, userId uint) interface{}
 	CreateClassUseCase(userInput entity.CreateUpdateClassBind, loginUser entity.User) (entity.CreateUpdateClassApi, interface{})
 	EditClassUseCase(userInput entity.CreateUpdateClassBind, loginUser entity.User, classId uint) (entity.CreateUpdateClassApi, interface{})
+	DeleteClassUseCase(loginUser entity.User, classId uint) interface{}
 }
 
 type classUseCase struct {
@@ -344,5 +345,50 @@ func (classUseCase *classUseCase) EditClassUseCase(userInput entity.CreateUpdate
 	classApi.Course.Credit = course.Credit
 
 	return classApi, nil
+
+}
+
+func (classUseCase *classUseCase) DeleteClassUseCase(loginUser entity.User, classId uint) interface{} {
+
+	//validate if user is admin
+	if loginUser.Role != "admin" {
+
+		errObject := library.ErrorObject{
+			Code:    http.StatusUnauthorized,
+			Message: "unauthorized",
+			Err:     errors.New("this endpoint only can be called by admin"),
+		}
+		return errObject
+
+	}
+
+	//validate if class exist
+	var class entity.Class
+	err := classUseCase.classRepository.FindClassByCondition(&class, "id = ?", classId)
+	if err != nil {
+
+		errObject := library.ErrorObject{
+			Code:    http.StatusConflict,
+			Message: "Class doesn't exist",
+			Err:     err,
+		}
+		return errObject
+
+	}
+
+	//delete class
+	err = classUseCase.classRepository.DeleteClass(&class)
+	if err != nil {
+
+		errObject := library.ErrorObject{
+			Code:    http.StatusConflict,
+			Message: "Class doesn't exist",
+			Err:     err,
+		}
+		return errObject
+
+	}
+
+	return nil
 
 }
