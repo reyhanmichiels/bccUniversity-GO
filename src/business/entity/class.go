@@ -19,12 +19,12 @@ type ClassApi struct {
 	ClassCode   string `json:"class_code"`
 }
 
-type CreateClassBind struct {
+type CreateUpdateClassBind struct {
 	Name      string `json:"name" binding:"required"`
 	Course_id uint   `json:"course_id" binding:"required,numeric"`
 }
 
-type CreateClassApi struct {
+type CreateUpdateClassApi struct {
 	Name        string `json:"name"`
 	Course_id   uint   `json:"course_id"`
 	Participant int    `json:"participant"`

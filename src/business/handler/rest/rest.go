@@ -50,6 +50,8 @@ func (r *rest) Route() {
 
 	v1.POST("/class", middleware.AuthJWT, r.CreateClass)
 
+	v1.POST("/class/:classId", middleware.AuthJWT, r.EditClass)
+
 }
 
 func InjectRest(usecase *usecase.UseCase) Rest {

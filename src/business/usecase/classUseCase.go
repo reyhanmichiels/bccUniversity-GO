@@ -12,7 +12,8 @@ type ClassUseCase interface {
 	GetAllClassUseCase() ([]entity.ClassApi, interface{})
 	RemoveUserFromClassUseCase(loginUser entity.User, classId uint, userId uint) interface{}
 	AdmAddUserToClassUseCase(loginUser entity.User, classId uint, userId uint) interface{}
-	CreateClassUseCase(userInput entity.CreateClassBind, loginUser entity.User) (entity.CreateClassApi, interface{})
+	CreateClassUseCase(userInput entity.CreateUpdateClassBind, loginUser entity.User) (entity.CreateUpdateClassApi, interface{})
+	EditClassUseCase(userInput entity.CreateUpdateClassBind, loginUser entity.User, classId uint) (entity.CreateUpdateClassApi, interface{})
 }
 
 type classUseCase struct {
@@ -200,7 +201,7 @@ func (classUseCase *classUseCase) AdmAddUserToClassUseCase(loginUser entity.User
 
 }
 
-func (classUsecase *classUseCase) CreateClassUseCase(userInput entity.CreateClassBind, loginUser entity.User) (entity.CreateClassApi, interface{}) {
+func (classUsecase *classUseCase) CreateClassUseCase(userInput entity.CreateUpdateClassBind, loginUser entity.User) (entity.CreateUpdateClassApi, interface{}) {
 
 	//validate if user is admin
 	if loginUser.Role != "admin" {
@@ -210,7 +211,7 @@ func (classUsecase *classUseCase) CreateClassUseCase(userInput entity.CreateClas
 			Message: "unauthorized",
 			Err:     errors.New("this endpoint only can be called by admin"),
 		}
-		return entity.CreateClassApi{}, errObject
+		return entity.CreateUpdateClassApi{}, errObject
 
 	}
 
@@ -228,7 +229,7 @@ func (classUsecase *classUseCase) CreateClassUseCase(userInput entity.CreateClas
 			Message: "course doesn't exist",
 			Err:     err,
 		}
-		return entity.CreateClassApi{}, errObject
+		return entity.CreateUpdateClassApi{}, errObject
 
 	}
 
@@ -247,11 +248,93 @@ func (classUsecase *classUseCase) CreateClassUseCase(userInput entity.CreateClas
 			Message: "failed to create class",
 			Err:     err,
 		}
-		return entity.CreateClassApi{}, errObject
+		return entity.CreateUpdateClassApi{}, errObject
 
 	}
 
-	classApi := entity.CreateClassApi{
+	classApi := entity.CreateUpdateClassApi{
+		Name:      class.Name,
+		Course_id: class.Course_id,
+		ClassCode: class.ClassCode,
+	}
+
+	classApi.Course.Name = course.Name
+	classApi.Course.Credit = course.Credit
+
+	return classApi, nil
+
+}
+
+func (classUseCase *classUseCase) EditClassUseCase(userInput entity.CreateUpdateClassBind, loginUser entity.User, classId uint) (entity.CreateUpdateClassApi, interface{}) {
+
+	//validate if user is admin
+	if loginUser.Role != "admin" {
+
+		errObject := library.ErrorObject{
+			Code:    http.StatusUnauthorized,
+			Message: "unauthorized",
+			Err:     errors.New("this endpoint only can be called by admin"),
+		}
+		return entity.CreateUpdateClassApi{}, errObject
+
+	}
+
+	//validate if class exist
+	var class entity.Class
+	err := classUseCase.classRepository.FindClassByCondition(&class, "id = ?", classId)
+	if err != nil {
+
+		errObject := library.ErrorObject{
+			Code:    http.StatusConflict,
+			Message: "Class doesn't exist",
+			Err:     err,
+		}
+		return entity.CreateUpdateClassApi{}, errObject
+
+	}
+
+	//validate if course exist
+	course := struct {
+		Name   string
+		Credit int
+	}{}
+
+	err = classUseCase.courseRepository.FindCourseByCondition(&course, "id = ?", userInput.Course_id)
+	if err != nil {
+
+		errObject := library.ErrorObject{
+			Code:    http.StatusConflict,
+			Message: "course doesn't exist",
+			Err:     err,
+		}
+		return entity.CreateUpdateClassApi{}, errObject
+
+	}
+
+	//update class
+	updateData := struct {
+		Name      string
+		Course_id uint
+		ClassCode string
+	}{
+		Name:      userInput.Name,
+		Course_id: userInput.Course_id,
+		ClassCode: library.GenerateClassCode(userInput.Name),
+	}
+
+	err = classUseCase.classRepository.Updateclass(&class, updateData)
+	if err != nil {
+
+		errObject := library.ErrorObject{
+			Code:    http.StatusInternalServerError,
+			Message: "failed to update class",
+			Err:     err,
+		}
+		return entity.CreateUpdateClassApi{}, errObject
+
+	}
+
+	classApi := entity.CreateUpdateClassApi{
 		Name:      class.Name,
 		Course_id: class.Course_id,
 		ClassCode: class.ClassCode,

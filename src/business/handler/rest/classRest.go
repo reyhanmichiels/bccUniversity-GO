@@ -76,7 +76,7 @@ func (rest *rest) AdmAddUserToClass(c *gin.Context) {
 	classId, err := strconv.ParseUint(c.Param("classId"), 10, 64)
 	if err != nil {
 
-		library.FailedResponse(c, http.StatusConflict, "failed to convert user id to int", err)
+		library.FailedResponse(c, http.StatusConflict, "failed to convert class id to int", err)
 		return
 
 	}
@@ -104,7 +104,7 @@ func (rest *rest) AdmAddUserToClass(c *gin.Context) {
 
 func (rest *rest) CreateClass(c *gin.Context) {
 
-	var userInput entity.CreateClassBind
+	var userInput entity.CreateUpdateClassBind
 
 	err := c.ShouldBindJSON(&userInput)
 	if err != nil {
@@ -131,6 +131,47 @@ func (rest *rest) CreateClass(c *gin.Context) {
 
 	}
 
-	library.SuccessedResponse(c, http.StatusOK, "successfully create new class", class)
+	library.SuccessedResponse(c, http.StatusCreated, "successfully create new class", class)
+
+}
+
+func (rest *rest) EditClass(c *gin.Context) {
+
+	var userInput entity.CreateUpdateClassBind
+
+	err := c.ShouldBindJSON(&userInput)
+	if err != nil {
+
+		library.FailedResponse(c, http.StatusConflict, "failed to bind input", err)
+		return
+
+	}
+
+	classId, err := strconv.ParseUint(c.Param("classId"), 10, 64)
+	if err != nil {
+
+		library.FailedResponse(c, http.StatusConflict, "failed to convert class id to int", err)
+		return
+
+	}
+
+	loginUser, ok := c.Get("user")
+	if !ok {
+
+		library.FailedResponse(c, http.StatusInternalServerError, "failed to generate login user", nil)
+		return
+
+	}
+
+	class, errObject := rest.uc.Class.EditClassUseCase(userInput, loginUser.(entity.User), uint(classId))
+	if errObject != nil {
+
+		errObject := errObject.(library.ErrorObject)
+		library.FailedResponse(c, errObject.Code, errObject.Message, errObject.Err)
+		return
+
+	}
+
+	library.SuccessedResponse(c, http.StatusOK, "successfully edit class", class)
 
 }

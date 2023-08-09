@@ -11,6 +11,7 @@ type ClassRepository interface {
 	ELFindClassByCondition(class interface{}, condition string, value interface{}) error
 	FindClassByCondition(class interface{}, condition string, value interface{}) error
 	CreateClass(class *entity.Class) error
+	Updateclass(class *entity.Class, updateData interface{}) error
 }
 
 type classRepository struct {
@@ -67,6 +68,19 @@ func (classRepository *classRepository) FindClassByCondition(class interface{}, 
 func (classRepository *classRepository) CreateClass(class *entity.Class) error {
 
 	err := classRepository.db.Create(class).Error
+	if err != nil {
+
+		return err
+
+	}
+
+	return nil
+
+}
+
+func (classRepository *classRepository) Updateclass(class *entity.Class, updateData interface{}) error {
+
+	err := classRepository.db.Model(class).Updates(updateData).Error
 	if err != nil {
 
 		return err
