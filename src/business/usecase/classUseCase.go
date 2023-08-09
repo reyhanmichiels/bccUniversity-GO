@@ -12,18 +12,21 @@ type ClassUseCase interface {
 	GetAllClassUseCase() ([]entity.ClassApi, interface{})
 	RemoveUserFromClassUseCase(loginUser entity.User, classId uint, userId uint) interface{}
 	AdmAddUserToClassUseCase(loginUser entity.User, classId uint, userId uint) interface{}
+	CreateClassUseCase(userInput entity.CreateClassBind, loginUser entity.User) (entity.CreateClassApi, interface{})
 }
 
 type classUseCase struct {
-	classRepository repository.ClassRepository
-	userRepository  repository.UserRepository
+	classRepository  repository.ClassRepository
+	userRepository   repository.UserRepository
+	courseRepository repository.CourseRepository
 }
 
-func NewClassUseCase(classRepository repository.ClassRepository, userRepository repository.UserRepository) ClassUseCase {
+func NewClassUseCase(classRepository repository.ClassRepository, userRepository repository.UserRepository, courseRepository repository.CourseRepository) ClassUseCase {
 
 	return &classUseCase{
-		classRepository: classRepository,
-		userRepository:  userRepository,
+		classRepository:  classRepository,
+		userRepository:   userRepository,
+		courseRepository: courseRepository,
 	}
 
 }
@@ -194,5 +197,69 @@ func (classUseCase *classUseCase) AdmAddUserToClassUseCase(loginUser entity.User
 	//add user to class
 	classUseCase.userRepository.AddUserToClass(&user, &class)
 	return nil
+
+}
+
+func (classUsecase *classUseCase) CreateClassUseCase(userInput entity.CreateClassBind, loginUser entity.User) (entity.CreateClassApi, interface{}) {
+
+	//validate if user is admin
+	if loginUser.Role != "admin" {
+
+		errObject := library.ErrorObject{
+			Code:    http.StatusUnauthorized,
+			Message: "unauthorized",
+			Err:     errors.New("this endpoint only can be called by admin"),
+		}
+		return entity.CreateClassApi{}, errObject
+
+	}
+
+	//validate if course exist
+	course := struct {
+		Name   string
+		Credit int
+	}{}
+
+	err := classUsecase.courseRepository.FindCourseByCondition(&course, "id = ?", userInput.Course_id)
+	if err != nil {
+
+		errObject := library.ErrorObject{
+			Code:    http.StatusConflict,
+			Message: "course doesn't exist",
+			Err:     err,
+		}
+		return entity.CreateClassApi{}, errObject
+
+	}
+
+	//create class
+	class := entity.Class{
+		Name:      userInput.Name,
+		Course_id: userInput.Course_id,
+		ClassCode: library.GenerateClassCode(userInput.Name),
+	}
+
+	err = classUsecase.classRepository.CreateClass(&class)
+	if err != nil {
+
+		errObject := library.ErrorObject{
+			Code:    http.StatusInternalServerError,
+			Message: "failed to create class",
+			Err:     err,
+		}
+		return entity.CreateClassApi{}, errObject
+
+	}
+
+	classApi := entity.CreateClassApi{
+		Name:      class.Name,
+		Course_id: class.Course_id,
+		ClassCode: class.ClassCode,
+	}
+
+	classApi.Course.Name = course.Name
+	classApi.Course.Credit = course.Credit
+
+	return classApi, nil
 
 }

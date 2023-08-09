@@ -48,6 +48,8 @@ func (r *rest) Route() {
 
 	v1.POST("/class/:classId/user/:userId", middleware.AuthJWT, r.AdmAddUserToClass)
 
+	v1.POST("/class", middleware.AuthJWT, r.CreateClass)
+
 }
 
 func InjectRest(usecase *usecase.UseCase) Rest {

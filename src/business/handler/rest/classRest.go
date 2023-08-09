@@ -101,3 +101,36 @@ func (rest *rest) AdmAddUserToClass(c *gin.Context) {
 	library.SuccessedResponse(c, http.StatusCreated, "successfully add user to class", nil)
 
 }
+
+func (rest *rest) CreateClass(c *gin.Context) {
+
+	var userInput entity.CreateClassBind
+
+	err := c.ShouldBindJSON(&userInput)
+	if err != nil {
+
+		library.FailedResponse(c, http.StatusConflict, "failed to bind input", err)
+		return
+
+	}
+
+	loginUser, ok := c.Get("user")
+	if !ok {
+
+		library.FailedResponse(c, http.StatusInternalServerError, "failed to generate login user", nil)
+		return
+
+	}
+
+	class, errObject := rest.uc.Class.CreateClassUseCase(userInput, loginUser.(entity.User))
+	if errObject != nil {
+
+		errObject := errObject.(library.ErrorObject)
+		library.FailedResponse(c, errObject.Code, errObject.Message, errObject.Err)
+		return
+
+	}
+
+	library.SuccessedResponse(c, http.StatusOK, "successfully create new class", class)
+
+}

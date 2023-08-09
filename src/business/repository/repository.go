@@ -6,6 +6,7 @@ type Repository struct {
 	User    UserRepository
 	Student StudentRepository
 	Class   ClassRepository
+	Course  CourseRepository
 }
 
 func InjectRepository(db *gorm.DB) *Repository {
@@ -13,5 +14,6 @@ func InjectRepository(db *gorm.DB) *Repository {
 		User:    NewUserRepository(db),
 		Student: NewStudentRepository(db),
 		Class:   NewClassRepository(db),
+		Course:  NewCourseRepository(db),
 	}
 }
