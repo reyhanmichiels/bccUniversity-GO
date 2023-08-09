@@ -172,6 +172,18 @@ func (classUseCase *classUseCase) AdmAddUserToClassUseCase(loginUser entity.User
 
 	}
 
+	//validate if user is student
+	if user.Student.Student_id_number == "" {
+
+		errObject := library.ErrorObject{
+			Code:    http.StatusConflict,
+			Message: "user is not student",
+			Err:     errors.New("you only can attach student to the class"),
+		}
+		return errObject
+
+	}
+
 	//check if user is in the class
 	var userInClass bool
 	for _, v := range user.Classes {
