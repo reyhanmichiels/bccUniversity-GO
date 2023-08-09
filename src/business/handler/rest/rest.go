@@ -44,6 +44,8 @@ func (r *rest) Route() {
 
 	v1.DELETE("/user/class/:id", middleware.AuthJWT, r.DropClass)
 
+	v1.DELETE("/class/:classId/user/:userId", middleware.AuthJWT, r.RemoveUserFromClass)
+
 }
 
 func InjectRest(usecase *usecase.UseCase) Rest {
