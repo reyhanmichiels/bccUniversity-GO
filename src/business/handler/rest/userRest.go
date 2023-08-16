@@ -43,7 +43,7 @@ func (rest *rest) Login(c *gin.Context) {
 	err := c.ShouldBindJSON(&userInput)
 	if err != nil {
 
-		library.FailedResponse(c, http.StatusConflict, "send the correct JSON request", err)
+		library.FailedResponse(c, http.StatusBadRequest, "send the correct JSON request", err)
 		return
 
 	}

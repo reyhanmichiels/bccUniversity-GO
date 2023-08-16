@@ -113,7 +113,7 @@ func (userUseCase *userUseCase) LoginUseCase(userInput entity.LoginBind, c *gin.
 	if err != nil {
 
 		errObject := library.ErrorObject{
-			Code:    http.StatusUnauthorized,
+			Code:    http.StatusBadRequest,
 			Message: "invalid password!",
 			Err:     err,
 		}
