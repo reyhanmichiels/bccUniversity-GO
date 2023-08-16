@@ -7,6 +7,7 @@ import (
 	"errors"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -61,8 +62,15 @@ func (userUseCase *userUseCase) RegistrationUseCase(userInput entity.RegistBind)
 	err = userUseCase.userRepository.CreateUser(&user)
 	if err != nil {
 
+		code := http.StatusInternalServerError
+		if strings.Contains(err.Error(), "Duplicate entry") {
+
+			code = http.StatusBadRequest
+
+		}
+
 		errObject := library.ErrorObject{
-			Code:    http.StatusInternalServerError,
+			Code:    code,
 			Message: "failed to create user",
 			Err:     err,
 		}

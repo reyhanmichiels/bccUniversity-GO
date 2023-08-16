@@ -22,9 +22,9 @@ type UserApi struct {
 
 type RegistBind struct {
 	Name     string `json:"name" binding:"required"`
-	Username string `json:"username" binding:"required"`
-	Email    string `json:"email" binding:"required,email,unique"`
-	Password string `json:"password" binding:"required"`
+	Username string `json:"username" binding:"required,max=20"`
+	Email    string `json:"email" binding:"required,email"`
+	Password string `json:"password" binding:"required,min=8"`
 }
 
 type RegistApi struct {
