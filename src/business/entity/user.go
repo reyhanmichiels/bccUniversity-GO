@@ -23,7 +23,7 @@ type UserApi struct {
 type RegistBind struct {
 	Name     string `json:"name" binding:"required"`
 	Username string `json:"username" binding:"required"`
-	Email    string `json:"email" binding:"required,email"`
+	Email    string `json:"email" binding:"required,email,unique"`
 	Password string `json:"password" binding:"required"`
 }
 
@@ -34,8 +34,8 @@ type RegistApi struct {
 }
 
 type LoginBind struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	Email    string `json:"email" binding:"required,email"`
+	Password string `json:"password" binding:"required"`
 }
 
 type EditAccountBind struct {
