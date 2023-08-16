@@ -4,11 +4,11 @@ import "gorm.io/gorm"
 
 type User struct {
 	gorm.Model
-	Name     string  `json:"name" gorm:"type:varchar(50)"`
-	Username string  `json:"username" gorm:"type:varchar(20)"`
-	Email    string  `json:"email" gorm:"type:varchar(50);unique"`
-	Password string  `json:"password" gorm:"type:varchar(100)"`
-	Role     string  `json:"role" gorm:"type:enum('admin', 'user');default:user"`
+	Name     string  `json:"name" gorm:"type:varchar(50);notnull"`
+	Username string  `json:"username" gorm:"type:varchar(20);notnull"`
+	Email    string  `json:"email" gorm:"type:varchar(50);unique;notnull"`
+	Password string  `json:"password" gorm:"type:varchar(100);notnull"`
+	Role     string  `json:"role" gorm:"type:enum('admin', 'user');default:user;notnull"`
 	Student  Student `json:"student"`
 	Classes  []Class `json:"classes" gorm:"many2many:user_classes"`
 }
