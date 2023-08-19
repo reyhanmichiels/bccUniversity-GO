@@ -68,7 +68,7 @@ var userInput entity.EditAccountBind
 	err := c.ShouldBindJSON(&userInput)
 	if err != nil {
 
-		library.FailedResponse(c, http.StatusConflict, "failed to bind input", err)
+		library.FailedResponse(c, http.StatusBadRequest, "failed to bind input", err)
 		return
 
 	}
