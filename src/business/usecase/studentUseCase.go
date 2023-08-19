@@ -30,7 +30,7 @@ func (studentUseCase *studentUseCase) ClaimStudentNumberUseCase(loginUser entity
 	if len(loginUser.Student.Student_id_number) != 0 {
 
 		errorObject := library.ErrorObject{
-			Code:    http.StatusBadRequest,
+			Code:    http.StatusConflict,
 			Message: "you already have student number",
 			Err:     errors.New("this endpoint only can be called for student who doesnt have student number"),
 		}
@@ -53,8 +53,8 @@ func (studentUseCase *studentUseCase) ClaimStudentNumberUseCase(loginUser entity
 	if err != nil {
 
 		errObject := library.ErrorObject{
-			Code:    http.StatusBadRequest,
-			Message: "failed covert string to number",
+			Code:    http.StatusInternalServerError,
+			Message: "failed generate student number",
 			Err:     err,
 		}
 		return entity.ClaimStudentNumberApi{}, errObject
@@ -69,8 +69,8 @@ func (studentUseCase *studentUseCase) ClaimStudentNumberUseCase(loginUser entity
 		if err != nil {
 
 			errObject := library.ErrorObject{
-				Code:    http.StatusBadRequest,
-				Message: "failed covert string to number",
+				Code:    http.StatusInternalServerError,
+				Message: "failed generate student number",
 				Err:     err,
 			}
 			return entity.ClaimStudentNumberApi{}, errObject
