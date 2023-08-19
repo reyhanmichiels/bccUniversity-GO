@@ -292,7 +292,7 @@ func (classUseCase *classUseCase) EditClassUseCase(userInput entity.CreateUpdate
 	if loginUser.Role != "admin" {
 
 		errObject := library.ErrorObject{
-			Code:    http.StatusUnauthorized,
+			Code:    http.StatusForbidden,
 			Message: "unauthorized",
 			Err:     errors.New("this endpoint only can be called by admin"),
 		}
@@ -306,7 +306,7 @@ func (classUseCase *classUseCase) EditClassUseCase(userInput entity.CreateUpdate
 	if err != nil {
 
 		errObject := library.ErrorObject{
-			Code:    http.StatusConflict,
+			Code:    http.StatusNotFound,
 			Message: "Class doesn't exist",
 			Err:     err,
 		}
@@ -324,7 +324,7 @@ func (classUseCase *classUseCase) EditClassUseCase(userInput entity.CreateUpdate
 	if err != nil {
 
 		errObject := library.ErrorObject{
-			Code:    http.StatusConflict,
+			Code:    http.StatusNotFound,
 			Message: "course doesn't exist",
 			Err:     err,
 		}
@@ -346,8 +346,15 @@ func (classUseCase *classUseCase) EditClassUseCase(userInput entity.CreateUpdate
 	err = classUseCase.classRepository.Updateclass(&class, updateData)
 	if err != nil {
 
+		code := http.StatusInternalServerError
+		if strings.Contains(err.Error(), "Duplicate entry") {
+
+			code = http.StatusConflict
+
+		}
+
 		errObject := library.ErrorObject{
-			Code:    http.StatusInternalServerError,
+			Code:    code,
 			Message: "failed to update class",
 			Err:     err,
 		}
