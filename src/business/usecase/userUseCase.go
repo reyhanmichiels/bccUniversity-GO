@@ -65,7 +65,7 @@ func (userUseCase *userUseCase) RegistrationUseCase(userInput entity.RegistBind)
 		code := http.StatusInternalServerError
 		if strings.Contains(err.Error(), "Duplicate entry") {
 
-			code = http.StatusBadRequest
+			code = http.StatusConflict
 
 		}
 
@@ -155,7 +155,7 @@ func (userUseCase *userUseCase) EditAccountUseCase(userInput entity.EditAccountB
 		code := http.StatusInternalServerError
 		if strings.Contains(err.Error(), "Duplicate entry") {
 
-			code = http.StatusBadRequest
+			code = http.StatusConflict
 
 		}
 
