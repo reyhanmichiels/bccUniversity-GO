@@ -3,6 +3,7 @@ package rest
 import (
 	"bcc-university/src/business/entity"
 	"bcc-university/src/sdk/library"
+	"errors"
 	"net/http"
 	"strconv"
 
@@ -205,4 +206,36 @@ func (rest *rest) DeleteClass(c *gin.Context) {
 
 	library.SuccessedResponse(c, http.StatusOK, "successfully delete class", nil)
 
+}
+
+func (rest *rest) GetClassParticipant(c *gin.Context) {
+
+	//bind param
+	classId, err := strconv.ParseUint(c.Param("classId"), 10, 64)
+	if err != nil {
+
+		library.FailedResponse(c, http.StatusBadRequest, "failed to convert class id to int", err)
+
+	}
+
+	//get login user
+	loginUser, ok := c.Get("user")
+	if !ok {
+
+		library.FailedResponse(c, http.StatusInternalServerError, "failed to generate login user", errors.New(""))
+
+	}
+
+	//see class participant
+	class, errObject := rest.uc.Class.GetClassParticipantUseCase(loginUser.(entity.User), uint(classId))
+	if errObject != nil {
+
+		errObject := errObject.(library.ErrorObject)
+		library.FailedResponse(c, errObject.Code, errObject.Message, errObject.Err)
+		return
+
+	}
+
+	//api response
+	library.SuccessedResponse(c, http.StatusOK, "successfully get class participant", class)
 }
