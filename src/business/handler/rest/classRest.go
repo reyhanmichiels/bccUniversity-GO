@@ -181,7 +181,7 @@ func (rest *rest) DeleteClass(c *gin.Context) {
 	classId, err := strconv.ParseUint(c.Param("classId"), 10, 64)
 	if err != nil {
 
-		library.FailedResponse(c, http.StatusConflict, "failed to convert class id to int", err)
+		library.FailedResponse(c, http.StatusBadRequest, "failed to convert class id to int", err)
 		return
 
 	}

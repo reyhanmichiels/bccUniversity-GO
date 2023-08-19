@@ -381,7 +381,7 @@ func (classUseCase *classUseCase) DeleteClassUseCase(loginUser entity.User, clas
 	if loginUser.Role != "admin" {
 
 		errObject := library.ErrorObject{
-			Code:    http.StatusUnauthorized,
+			Code:    http.StatusForbidden,
 			Message: "unauthorized",
 			Err:     errors.New("this endpoint only can be called by admin"),
 		}
@@ -395,8 +395,8 @@ func (classUseCase *classUseCase) DeleteClassUseCase(loginUser entity.User, clas
 	if err != nil {
 
 		errObject := library.ErrorObject{
-			Code:    http.StatusConflict,
-			Message: "Class doesn't exist",
+			Code:    http.StatusNotFound,
+			Message: "class doesn't exist",
 			Err:     err,
 		}
 		return errObject
@@ -408,8 +408,8 @@ func (classUseCase *classUseCase) DeleteClassUseCase(loginUser entity.User, clas
 	if err != nil {
 
 		errObject := library.ErrorObject{
-			Code:    http.StatusConflict,
-			Message: "Class doesn't exist",
+			Code:    http.StatusInternalServerError,
+			Message: "failed to delete class",
 			Err:     err,
 		}
 		return errObject
