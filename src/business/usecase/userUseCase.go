@@ -186,7 +186,7 @@ func (userUseCase *userUseCase) AddUserToClassUseCase(loginUser entity.User, cla
 	if loginUser.Student.Student_id_number == "" {
 
 		errObject := library.ErrorObject{
-			Code:    http.StatusUnauthorized,
+			Code:    http.StatusForbidden,
 			Message: "you are not student",
 			Err:     errors.New("this endpoint only can be called by student"),
 		}
@@ -202,7 +202,7 @@ func (userUseCase *userUseCase) AddUserToClassUseCase(loginUser entity.User, cla
 	if err != nil {
 
 		errObject := library.ErrorObject{
-			Code:    http.StatusConflict,
+			Code:    http.StatusBadRequest,
 			Message: "you have wrong class code",
 			Err:     err,
 		}
