@@ -13,6 +13,7 @@ type ClassRepository interface {
 	CreateClass(class *entity.Class) error
 	Updateclass(class *entity.Class, updateData interface{}) error
 	DeleteClass(class *entity.Class) error
+	FindClassParticipant(class *entity.Class, users interface{})
 }
 
 type classRepository struct {
@@ -102,5 +103,11 @@ func (classRepository *classRepository) DeleteClass(class *entity.Class) error {
 	}
 
 	return nil
+
+}
+
+func (classRepository *classRepository) FindClassParticipant(class *entity.Class, users interface{}) {
+
+	classRepository.db.Model(&class).Association("Users").Find(users)
 
 }
