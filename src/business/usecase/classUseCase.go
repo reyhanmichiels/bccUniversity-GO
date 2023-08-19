@@ -16,6 +16,7 @@ type ClassUseCase interface {
 	CreateClassUseCase(userInput entity.CreateUpdateClassBind, loginUser entity.User) (entity.CreateUpdateClassApi, interface{})
 	EditClassUseCase(userInput entity.CreateUpdateClassBind, loginUser entity.User, classId uint) (entity.CreateUpdateClassApi, interface{})
 	DeleteClassUseCase(loginUser entity.User, classId uint) interface{}
+	GetClassParticipantUseCase(loginUser entity.User, classId uint) (entity.ClassParticipantApi, interface{})
 }
 
 type classUseCase struct {
@@ -417,5 +418,67 @@ func (classUseCase *classUseCase) DeleteClassUseCase(loginUser entity.User, clas
 	}
 
 	return nil
+
+}
+
+func (classUseCase *classUseCase) GetClassParticipantUseCase(loginUser entity.User, classId uint) (entity.ClassParticipantApi, interface{}) {
+
+	//check if class exist
+	var class entity.Class
+
+	err := classUseCase.classRepository.ELFindClassByCondition(&class, "id = ?", classId)
+	if err != nil {
+
+		errObject := library.ErrorObject{
+			Code:    http.StatusNotFound,
+			Message: "class not found",
+			Err:     err,
+		}
+		return entity.ClassParticipantApi{}, errObject
+
+	}
+
+	//check if user  join the class
+	userInClass := false
+
+	for _, v := range loginUser.Classes {
+
+		if v.ID == classId {
+
+			userInClass = true
+			break
+
+		}
+
+	}
+
+	if !userInClass {
+
+		errObject := library.ErrorObject{
+			Code:    http.StatusForbidden,
+			Message: "you don't join the class",
+			Err:     errors.New("you should join the class to see the class participant"),
+		}
+		return entity.ClassParticipantApi{}, errObject
+
+	}
+
+	//get class participant
+	user := []struct {
+		Name string
+	}{}
+
+	classUseCase.classRepository.FindClassParticipant(&class, &user)
+
+	classApi := entity.ClassParticipantApi{
+		Name:        class.Name,
+		Course_id:   class.Course_id,
+		Participant: class.Participant,
+		ClassCode:   class.ClassCode,
+		Users:       user,
+	}
+
+	//return
+	return classApi, nil
 
 }
