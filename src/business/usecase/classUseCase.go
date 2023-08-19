@@ -6,6 +6,7 @@ import (
 	"bcc-university/src/sdk/library"
 	"errors"
 	"net/http"
+	"strings"
 )
 
 type ClassUseCase interface {
@@ -220,7 +221,7 @@ func (classUsecase *classUseCase) CreateClassUseCase(userInput entity.CreateUpda
 	if loginUser.Role != "admin" {
 
 		errObject := library.ErrorObject{
-			Code:    http.StatusUnauthorized,
+			Code:    http.StatusForbidden,
 			Message: "unauthorized",
 			Err:     errors.New("this endpoint only can be called by admin"),
 		}
@@ -238,7 +239,7 @@ func (classUsecase *classUseCase) CreateClassUseCase(userInput entity.CreateUpda
 	if err != nil {
 
 		errObject := library.ErrorObject{
-			Code:    http.StatusConflict,
+			Code:    http.StatusNotFound,
 			Message: "course doesn't exist",
 			Err:     err,
 		}
@@ -256,8 +257,15 @@ func (classUsecase *classUseCase) CreateClassUseCase(userInput entity.CreateUpda
 	err = classUsecase.classRepository.CreateClass(&class)
 	if err != nil {
 
+		code := http.StatusInternalServerError
+		if strings.Contains(err.Error(), "Duplicate entry") {
+
+			code = http.StatusConflict
+
+		}
+
 		errObject := library.ErrorObject{
-			Code:    http.StatusInternalServerError,
+			Code:    code,
 			Message: "failed to create class",
 			Err:     err,
 		}
