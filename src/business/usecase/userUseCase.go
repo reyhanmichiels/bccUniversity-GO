@@ -202,7 +202,7 @@ func (userUseCase *userUseCase) AddUserToClassUseCase(loginUser entity.User, cla
 	if err != nil {
 
 		errObject := library.ErrorObject{
-			Code:    http.StatusBadRequest,
+			Code:    http.StatusNotFound,
 			Message: "you have wrong class code",
 			Err:     err,
 		}
