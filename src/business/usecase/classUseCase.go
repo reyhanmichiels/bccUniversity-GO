@@ -134,7 +134,7 @@ func (classUseCase *classUseCase) AdmAddUserToClassUseCase(loginUser entity.User
 	if loginUser.Role != "admin" {
 
 		errObject := library.ErrorObject{
-			Code:    http.StatusUnauthorized,
+			Code:    http.StatusForbidden,
 			Message: "unauthorized",
 			Err:     errors.New("this endpoint only can be called by admin"),
 		}
@@ -149,7 +149,7 @@ func (classUseCase *classUseCase) AdmAddUserToClassUseCase(loginUser entity.User
 	if err != nil {
 
 		errObject := library.ErrorObject{
-			Code:    http.StatusConflict,
+			Code:    http.StatusForbidden,
 			Message: "class doesn't exist",
 			Err:     err,
 		}
@@ -164,7 +164,7 @@ func (classUseCase *classUseCase) AdmAddUserToClassUseCase(loginUser entity.User
 	if err != nil {
 
 		errObject := library.ErrorObject{
-			Code:    http.StatusConflict,
+			Code:    http.StatusForbidden,
 			Message: "user doesn't exist",
 			Err:     err,
 		}
