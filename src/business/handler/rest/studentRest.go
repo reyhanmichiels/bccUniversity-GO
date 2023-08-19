@@ -10,7 +10,12 @@ import (
 
 func (rest *rest) ClaimStudentNumber(c *gin.Context) {
 
-	loginUser, _ := c.Get("user")
+	loginUser, ok := c.Get("user")
+	if !ok {
+
+		library.FailedResponse(c, http.StatusInternalServerError, "failed to generate login user", nil)
+
+	}
 
 	//generate student number
 	student, errObject := rest.uc.Student.ClaimStudentNumberUseCase(loginUser.(entity.User))
