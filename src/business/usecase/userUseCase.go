@@ -152,8 +152,15 @@ func (userUseCase *userUseCase) EditAccountUseCase(userInput entity.EditAccountB
 	err := userUseCase.userRepository.UpdateUser(&loginUser, userInput)
 	if err != nil {
 
+		code := http.StatusInternalServerError
+		if strings.Contains(err.Error(), "Duplicate entry") {
+
+			code = http.StatusBadRequest
+
+		}
+
 		errObject := library.ErrorObject{
-			Code:    http.StatusInternalServerError,
+			Code:    code,
 			Message: "failed to update user",
 			Err:     err,
 		}
