@@ -130,7 +130,7 @@ func (rest *rest) DropClass(c *gin.Context) {
 	classId, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	if err != nil {
 
-		library.FailedResponse(c, http.StatusConflict, "failed convert id to int", err)
+		library.FailedResponse(c, http.StatusBadRequest, "failed convert id to int", err)
 		return
 
 	}

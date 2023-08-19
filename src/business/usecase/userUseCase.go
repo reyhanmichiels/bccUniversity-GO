@@ -268,7 +268,7 @@ func (userUseCase *userUseCase) DropClassUseCase(loginUser entity.User, classId 
 	if err != nil {
 
 		errObject := library.ErrorObject{
-			Code:    http.StatusConflict,
+			Code:    http.StatusNotFound,
 			Message: "class not found",
 			Err:     err,
 		}
@@ -291,7 +291,7 @@ func (userUseCase *userUseCase) DropClassUseCase(loginUser entity.User, classId 
 	if !userInClass {
 
 		errObject := library.ErrorObject{
-			Code:    http.StatusConflict,
+			Code:    http.StatusNotFound,
 			Message: "you don't join the class",
 			Err:     errors.New("wrong class id"),
 		}
