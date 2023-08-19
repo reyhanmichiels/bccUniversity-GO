@@ -29,7 +29,7 @@ func (rest *rest) RemoveUserFromClass(c *gin.Context) {
 	userId, err := strconv.ParseUint(c.Param("userId"), 10, 64)
 	if err != nil {
 
-		library.FailedResponse(c, http.StatusConflict, "failed to convert user id to int", err)
+		library.FailedResponse(c, http.StatusBadRequest, "failed to convert user id to int", err)
 		return
 
 	}
@@ -37,7 +37,7 @@ func (rest *rest) RemoveUserFromClass(c *gin.Context) {
 	classId, err := strconv.ParseUint(c.Param("classId"), 10, 64)
 	if err != nil {
 
-		library.FailedResponse(c, http.StatusConflict, "failed to convert user id to int", err)
+		library.FailedResponse(c, http.StatusBadRequest, "failed to convert class id to int", err)
 		return
 
 	}

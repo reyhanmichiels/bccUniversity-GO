@@ -59,7 +59,7 @@ func (classUseCase *classUseCase) RemoveUserFromClassUseCase(loginUser entity.Us
 	if loginUser.Role != "admin" {
 
 		errObject := library.ErrorObject{
-			Code:    http.StatusUnauthorized,
+			Code:    http.StatusForbidden,
 			Message: "unauthorized",
 			Err:     errors.New("this endpoint only can be called by admin"),
 		}
@@ -74,7 +74,7 @@ func (classUseCase *classUseCase) RemoveUserFromClassUseCase(loginUser entity.Us
 	if err != nil {
 
 		errObject := library.ErrorObject{
-			Code:    http.StatusConflict,
+			Code:    http.StatusNotFound,
 			Message: "class doesn't exist",
 			Err:     err,
 		}
@@ -89,7 +89,7 @@ func (classUseCase *classUseCase) RemoveUserFromClassUseCase(loginUser entity.Us
 	if err != nil {
 
 		errObject := library.ErrorObject{
-			Code:    http.StatusConflict,
+			Code:    http.StatusNotFound,
 			Message: "user doesn't exist",
 			Err:     err,
 		}
@@ -113,7 +113,7 @@ func (classUseCase *classUseCase) RemoveUserFromClassUseCase(loginUser entity.Us
 	if !userInClass {
 
 		errObject := library.ErrorObject{
-			Code:    http.StatusConflict,
+			Code:    http.StatusNotFound,
 			Message: "user doesn't join the class",
 			Err:     errors.New("this endpoint only can be called if user join the class"),
 		}
