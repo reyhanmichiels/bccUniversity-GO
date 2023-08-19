@@ -34,3 +34,11 @@ type CreateUpdateClassApi struct {
 		Credit int    `json:"credit"`
 	} `json:"Course"`
 }
+
+type ClassParticipantApi struct {
+	Name        string      `json:"name"`
+	Course_id   uint        `json:"course_id"`
+	Participant int         `json:"participant"`
+	ClassCode   string      `json:"class_code"`
+	Users       interface{} `json:"users"`
+}
