@@ -15,7 +15,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-type UserUseCase interface {
+type IUserUseCase interface {
 	RegistrationUseCase(userInput entity.RegistBind) (entity.RegistApi, interface{})
 	LoginUseCase(userInput entity.LoginBind, c *gin.Context) interface{}
 	EditAccountUseCase(userInput entity.EditAccountBind, loginUser entity.User) (entity.UserApi, interface{})
@@ -23,19 +23,19 @@ type UserUseCase interface {
 	DropClassUseCase(loginUser entity.User, classId uint) interface{}
 }
 
-type userUseCase struct {
+type UserUseCase struct {
 	userRepository  repository.UserRepository
 	classRepository repository.ClassRepository
 }
 
-func NewUserUseCase(userRepository repository.UserRepository, classRepository repository.ClassRepository) UserUseCase {
-	return &userUseCase{
+func NewUserUseCase(userRepository repository.UserRepository, classRepository repository.ClassRepository) IUserUseCase {
+	return &UserUseCase{
 		userRepository:  userRepository,
 		classRepository: classRepository,
 	}
 }
 
-func (userUseCase *userUseCase) RegistrationUseCase(userInput entity.RegistBind) (entity.RegistApi, interface{}) {
+func (userUseCase *UserUseCase) RegistrationUseCase(userInput entity.RegistBind) (entity.RegistApi, interface{}) {
 
 	//hash pasword
 	password, err := bcrypt.GenerateFromPassword([]byte(userInput.Password), 10)
@@ -88,7 +88,7 @@ func (userUseCase *userUseCase) RegistrationUseCase(userInput entity.RegistBind)
 
 }
 
-func (userUseCase *userUseCase) LoginUseCase(userInput entity.LoginBind, c *gin.Context) interface{} {
+func (userUseCase *UserUseCase) LoginUseCase(userInput entity.LoginBind, c *gin.Context) interface{} {
 
 	//verify credential
 	user := struct {
@@ -147,7 +147,7 @@ func (userUseCase *userUseCase) LoginUseCase(userInput entity.LoginBind, c *gin.
 
 }
 
-func (userUseCase *userUseCase) EditAccountUseCase(userInput entity.EditAccountBind, loginUser entity.User) (entity.UserApi, interface{}) {
+func (userUseCase *UserUseCase) EditAccountUseCase(userInput entity.EditAccountBind, loginUser entity.User) (entity.UserApi, interface{}) {
 
 	err := userUseCase.userRepository.UpdateUser(&loginUser, userInput)
 	if err != nil {
@@ -179,7 +179,7 @@ func (userUseCase *userUseCase) EditAccountUseCase(userInput entity.EditAccountB
 
 }
 
-func (userUseCase *userUseCase) AddUserToClassUseCase(loginUser entity.User, classCode string) interface{} {
+func (userUseCase *UserUseCase) AddUserToClassUseCase(loginUser entity.User, classCode string) interface{} {
 
 	//validate if user a student
 
@@ -260,7 +260,7 @@ func (userUseCase *userUseCase) AddUserToClassUseCase(loginUser entity.User, cla
 
 }
 
-func (userUseCase *userUseCase) DropClassUseCase(loginUser entity.User, classId uint) interface{} {
+func (userUseCase *UserUseCase) DropClassUseCase(loginUser entity.User, classId uint) interface{} {
 
 	//validate if the class exist
 	var class entity.Class

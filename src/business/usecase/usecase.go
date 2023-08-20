@@ -3,7 +3,7 @@ package usecase
 import "bcc-university/src/business/repository"
 
 type UseCase struct {
-	User    UserUseCase
+	User    IUserUseCase
 	Student StudentUseCase
 	Class   ClassUseCase
 }
