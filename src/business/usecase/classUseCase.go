@@ -21,11 +21,11 @@ type ClassUseCase interface {
 
 type classUseCase struct {
 	classRepository  repository.ClassRepository
-	userRepository   repository.UserRepository
+	userRepository   repository.IUserRepository
 	courseRepository repository.CourseRepository
 }
 
-func NewClassUseCase(classRepository repository.ClassRepository, userRepository repository.UserRepository, courseRepository repository.CourseRepository) ClassUseCase {
+func NewClassUseCase(classRepository repository.ClassRepository, userRepository repository.IUserRepository, courseRepository repository.CourseRepository) ClassUseCase {
 
 	return &classUseCase{
 		classRepository:  classRepository,

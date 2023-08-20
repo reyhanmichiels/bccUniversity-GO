@@ -24,11 +24,11 @@ type IUserUseCase interface {
 }
 
 type UserUseCase struct {
-	userRepository  repository.UserRepository
+	userRepository  repository.IUserRepository
 	classRepository repository.ClassRepository
 }
 
-func NewUserUseCase(userRepository repository.UserRepository, classRepository repository.ClassRepository) IUserUseCase {
+func NewUserUseCase(userRepository repository.IUserRepository, classRepository repository.ClassRepository) IUserUseCase {
 	return &UserUseCase{
 		userRepository:  userRepository,
 		classRepository: classRepository,

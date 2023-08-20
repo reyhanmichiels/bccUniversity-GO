@@ -3,7 +3,7 @@ package repository
 import "gorm.io/gorm"
 
 type Repository struct {
-	User    UserRepository
+	User    IUserRepository
 	Student StudentRepository
 	Class   ClassRepository
 	Course  CourseRepository

@@ -6,7 +6,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type UserRepository interface {
+type IUserRepository interface {
 	CreateUser(user *entity.User) error
 	FindUserByEmail(email string) (entity.User, error)
 	FindUserByCondition(user interface{}, condition string, value interface{}) error
@@ -16,15 +16,15 @@ type UserRepository interface {
 	DropUserFromClass(user *entity.User, class *entity.Class)
 }
 
-type userRepository struct {
+type UserRepository struct {
 	db *gorm.DB
 }
 
-func NewUserRepository(db *gorm.DB) UserRepository {
-	return &userRepository{db: db}
+func NewUserRepository(db *gorm.DB) IUserRepository {
+	return &UserRepository{db: db}
 }
 
-func (userRepository *userRepository) CreateUser(user *entity.User) error {
+func (userRepository *UserRepository) CreateUser(user *entity.User) error {
 
 	//create user
 	err := userRepository.db.Create(user).Error
@@ -38,7 +38,7 @@ func (userRepository *userRepository) CreateUser(user *entity.User) error {
 
 }
 
-func (userRepository *userRepository) FindUserByCondition(user interface{}, condition string, value interface{}) error {
+func (userRepository *UserRepository) FindUserByCondition(user interface{}, condition string, value interface{}) error {
 
 	err := userRepository.db.Model(&entity.User{}).First(user, condition, value).Error
 	if err != nil {
@@ -51,7 +51,7 @@ func (userRepository *userRepository) FindUserByCondition(user interface{}, cond
 
 }
 
-func (userRepository *userRepository) ELFindUserByCondition(user interface{}, condition string, value interface{}) error {
+func (userRepository *UserRepository) ELFindUserByCondition(user interface{}, condition string, value interface{}) error {
 
 	err := userRepository.db.Model(&entity.User{}).Preload("Student").Preload("Classes").First(user, condition, value).Error
 	if err != nil {
@@ -64,7 +64,7 @@ func (userRepository *userRepository) ELFindUserByCondition(user interface{}, co
 
 }
 
-func (userRepository *userRepository) FindUserByEmail(email string) (entity.User, error) {
+func (userRepository *UserRepository) FindUserByEmail(email string) (entity.User, error) {
 
 	var user entity.User
 	err := userRepository.db.First(&user, "email = ?", email)
@@ -72,7 +72,7 @@ func (userRepository *userRepository) FindUserByEmail(email string) (entity.User
 
 }
 
-func (userRepository *userRepository) UpdateUser(user *entity.User, updateData interface{}) error {
+func (userRepository *UserRepository) UpdateUser(user *entity.User, updateData interface{}) error {
 
 	err := userRepository.db.Model(user).Updates(updateData).Error
 
@@ -86,7 +86,7 @@ func (userRepository *userRepository) UpdateUser(user *entity.User, updateData i
 
 }
 
-func (userRepository *userRepository) AddUserToClass(user *entity.User, class *entity.Class) {
+func (userRepository *UserRepository) AddUserToClass(user *entity.User, class *entity.Class) {
 
 	userRepository.db.Model(user).Association("Classes").Append(class)
 
@@ -95,7 +95,7 @@ func (userRepository *userRepository) AddUserToClass(user *entity.User, class *e
 
 }
 
-func (userRepository *userRepository) DropUserFromClass(user *entity.User, class *entity.Class) {
+func (userRepository *UserRepository) DropUserFromClass(user *entity.User, class *entity.Class) {
 
 	userRepository.db.Model(user).Association("Classes").Delete(class)
 
