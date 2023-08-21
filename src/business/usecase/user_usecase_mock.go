@@ -25,7 +25,10 @@ func (userUseCaseMock *UserUseCaseMock) RegistrationUseCase(userInput entity.Reg
 }
 
 func (userUseCaseMock *UserUseCaseMock) LoginUseCase(userInput entity.LoginBind, c *gin.Context) interface{} {
-	return nil
+
+	args := userUseCaseMock.Mock.Called(userInput)
+	return args[0]
+
 }
 func (userUseCaseMock *UserUseCaseMock) EditAccountUseCase(userInput entity.EditAccountBind, loginUser entity.User) (entity.UserApi, interface{}) {
 	return entity.UserApi{}, nil

@@ -62,7 +62,7 @@ func TestRegistration(t *testing.T) {
 
 	for i, v := range userInput {
 
-		t.Run(fmt.Sprintf("registration testing %d", i + 1), func(t *testing.T) {
+		t.Run(fmt.Sprintf("registration testing %d", i+1), func(t *testing.T) {
 
 			functionReturn := entity.RegistApi{
 				Name:     v.Name,
@@ -107,6 +107,77 @@ func TestRegistration(t *testing.T) {
 			assert.Equal(t, v.Email, userResponse["email"], "email should be equal")
 			assert.Equal(t, "successfully registration new user!", jsonResponse["message"], "message should be equal")
 			assert.Equal(t, "success", jsonResponse["status"], "status should be equal")
+
+			callFunction.Unset()
+
+		})
+
+	}
+
+}
+
+func TestLogin(t *testing.T) {
+
+	userInput := []entity.LoginBind{
+		{
+			Email:    "test1@test.com",
+			Password: "testpass1",
+		},
+		{
+			Email:    "test2@test.com",
+			Password: "testpass2",
+		},
+		{
+			Email:    "test3@test.com",
+			Password: "testpass3",
+		},
+		{
+			Email:    "test4@test.com",
+			Password: "testpass4",
+		},
+		{
+			Email:    "test5@test.com",
+			Password: "testpass5",
+		},
+	}
+
+	for i, v := range userInput {
+
+		t.Run(fmt.Sprintf("login testing %d", i+1), func(t *testing.T) {
+
+			engine := gin.Default()
+			engine.POST("/api/v1/login", userRest.Login)
+
+			callFunction := userUseCaseMock.Mock.On("LoginUseCase", v).Return(nil)
+
+			jsonData, err := json.Marshal(v)
+			if err != nil {
+
+				t.Fatal(err.Error())
+
+			}
+
+			response := httptest.NewRecorder()
+			request, err := http.NewRequest("POST", "/api/v1/login", bytes.NewBuffer(jsonData))
+			if err != nil {
+
+				t.Fatal(err.Error())
+
+			}
+			engine.ServeHTTP(response, request)
+			fmt.Println(response.Body, "ini response body")
+			var jsonResponse map[string]any
+			err = json.Unmarshal(response.Body.Bytes(), &jsonResponse)
+			if err != nil {
+				
+				t.Fatal(err.Error())
+
+			}
+
+			assert.Equal(t, http.StatusOK, response.Code, "http status code should be equal")
+			assert.Equal(t, "success", jsonResponse["status"], "status should be equal")
+			assert.Equal(t, "successes login", jsonResponse["message"], "message should be equal")
+			assert.Equal(t, nil, jsonResponse["data"], "data should be equal")
 
 			callFunction.Unset()
 
