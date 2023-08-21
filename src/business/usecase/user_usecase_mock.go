@@ -1,4 +1,4 @@
-package mock
+package usecase
 
 import (
 	"bcc-university/src/business/entity"
