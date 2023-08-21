@@ -8,20 +8,20 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type Rest interface {
+type IRest interface {
 	Run()
 }
 
-type rest struct {
+type Rest struct {
 	uc  *usecase.UseCase
 	gin *gin.Engine
 }
 
-func (r *rest) Run() {
+func (r *Rest) Run() {
 	r.gin.Run()
 }
 
-func (r *rest) Route() {
+func (r *Rest) Route() {
 	v1 := r.gin.Group("/api/v1")
 
 	v1.GET("/", func(ctx *gin.Context) {
@@ -58,8 +58,8 @@ func (r *rest) Route() {
 
 }
 
-func InjectRest(usecase *usecase.UseCase) Rest {
-	r := &rest{
+func InjectRest(usecase *usecase.UseCase) IRest {
+	r := &Rest{
 		uc:  usecase,
 		gin: gin.Default(),
 	}

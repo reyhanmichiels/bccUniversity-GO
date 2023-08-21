@@ -9,7 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (rest *rest) Registration(c *gin.Context) {
+func (rest *Rest) Registration(c *gin.Context) {
 
 	//binding user request
 	var userInput entity.RegistBind
@@ -35,7 +35,7 @@ func (rest *rest) Registration(c *gin.Context) {
 
 }
 
-func (rest *rest) Login(c *gin.Context) {
+func (rest *Rest) Login(c *gin.Context) {
 
 	//binding user request
 	var userInput entity.LoginBind
@@ -61,7 +61,7 @@ func (rest *rest) Login(c *gin.Context) {
 
 }
 
-func (rest *rest) EditAccount(c *gin.Context) {
+func (rest *Rest) EditAccount(c *gin.Context) {
 
 var userInput entity.EditAccountBind
 
@@ -93,7 +93,7 @@ var userInput entity.EditAccountBind
 
 }
 
-func (rest *rest) AddUserToClass(c *gin.Context) {
+func (rest *Rest) AddUserToClass(c *gin.Context) {
 
 	var userInput entity.AddClassBind
 
@@ -125,7 +125,7 @@ func (rest *rest) AddUserToClass(c *gin.Context) {
 
 }
 
-func (rest *rest) DropClass(c *gin.Context) {
+func (rest *Rest) DropClass(c *gin.Context) {
 
 	classId, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	if err != nil {

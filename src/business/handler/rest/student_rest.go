@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (rest *rest) ClaimStudentNumber(c *gin.Context) {
+func (rest *Rest) ClaimStudentNumber(c *gin.Context) {
 
 	loginUser, ok := c.Get("user")
 	if !ok {

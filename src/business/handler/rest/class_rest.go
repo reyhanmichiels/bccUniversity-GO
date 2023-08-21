@@ -10,7 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (rest *rest) GetAllClass(c *gin.Context) {
+func (rest *Rest) GetAllClass(c *gin.Context) {
 
 	allClass, errObject := rest.uc.Class.GetAllClassUseCase()
 	if errObject != nil {
@@ -25,7 +25,7 @@ func (rest *rest) GetAllClass(c *gin.Context) {
 
 }
 
-func (rest *rest) RemoveUserFromClass(c *gin.Context) {
+func (rest *Rest) RemoveUserFromClass(c *gin.Context) {
 
 	userId, err := strconv.ParseUint(c.Param("userId"), 10, 64)
 	if err != nil {
@@ -64,7 +64,7 @@ func (rest *rest) RemoveUserFromClass(c *gin.Context) {
 
 }
 
-func (rest *rest) AdmAddUserToClass(c *gin.Context) {
+func (rest *Rest) AdmAddUserToClass(c *gin.Context) {
 
 	userId, err := strconv.ParseUint(c.Param("userId"), 10, 64)
 	if err != nil {
@@ -103,7 +103,7 @@ func (rest *rest) AdmAddUserToClass(c *gin.Context) {
 
 }
 
-func (rest *rest) CreateClass(c *gin.Context) {
+func (rest *Rest) CreateClass(c *gin.Context) {
 
 	var userInput entity.CreateUpdateClassBind
 
@@ -136,7 +136,7 @@ func (rest *rest) CreateClass(c *gin.Context) {
 
 }
 
-func (rest *rest) EditClass(c *gin.Context) {
+func (rest *Rest) EditClass(c *gin.Context) {
 
 	var userInput entity.CreateUpdateClassBind
 
@@ -177,7 +177,7 @@ func (rest *rest) EditClass(c *gin.Context) {
 
 }
 
-func (rest *rest) DeleteClass(c *gin.Context) {
+func (rest *Rest) DeleteClass(c *gin.Context) {
 
 	classId, err := strconv.ParseUint(c.Param("classId"), 10, 64)
 	if err != nil {
@@ -208,7 +208,7 @@ func (rest *rest) DeleteClass(c *gin.Context) {
 
 }
 
-func (rest *rest) GetClassParticipant(c *gin.Context) {
+func (rest *Rest) GetClassParticipant(c *gin.Context) {
 
 	//bind param
 	classId, err := strconv.ParseUint(c.Param("classId"), 10, 64)
