@@ -550,7 +550,7 @@ func TestEditAccountPath4(t *testing.T) {
 
 func TestAddUserToClassPath1(t *testing.T) {
 
-	userInput := []entity.EditAccountBind{
+	userInput := []entity.AddClassBind{
 		{},
 		{},
 		{},
@@ -591,6 +591,67 @@ func TestAddUserToClassPath1(t *testing.T) {
 
 			assert.Equal(t, http.StatusBadRequest, response.Code, "status code should be equal")
 			assert.Equal(t, "failed to bind input", jsonResponse["message"], "message should be equal")
+			assert.Equal(t, "error", jsonResponse["status"], "status should be equal")
+
+		})
+
+	}
+
+}
+
+func TestAddUserToClassPath2(t *testing.T) {
+
+	userInput := []entity.AddClassBind{
+		{
+			ClassCode: "test1",
+		},
+		{
+			ClassCode: "test2",
+		},
+		{
+			ClassCode: "test3",
+		},
+		{
+			ClassCode: "test4",
+		},
+		{
+			ClassCode: "test5",
+		},
+	}
+
+	for i, v := range userInput {
+
+		t.Run(fmt.Sprintf("path 2 add user to class testing %d", i+1), func(t *testing.T) {
+
+			engine := gin.Default()
+			engine.POST("/api/v1/user/class", userRest.AddUserToClass)
+
+			jsonData, err := json.Marshal(v)
+			if err != nil {
+
+				t.Fatal(err.Error())
+
+			}
+
+			response := httptest.NewRecorder()
+			request, err := http.NewRequest("POST", "/api/v1/user/class", bytes.NewBuffer(jsonData))
+			if err != nil {
+
+				t.Fatal(err.Error())
+
+			}
+			engine.ServeHTTP(response, request)
+
+			var jsonResponse map[string]any
+			err = json.Unmarshal(response.Body.Bytes(), &jsonResponse)
+			if err != nil {
+
+				t.Fatal(err.Error())
+
+			}
+
+			assert.Equal(t, http.StatusInternalServerError, response.Code, "status code should be equal")
+			assert.Equal(t, "failed to generate login user", jsonResponse["message"], "message should be equal")
 			assert.Equal(t, "error", jsonResponse["status"], "status should be equal")
 
 		})
