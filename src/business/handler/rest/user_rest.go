@@ -3,6 +3,7 @@ package rest
 import (
 	"bcc-university/src/business/entity"
 	"bcc-university/src/sdk/library"
+	"errors"
 	"net/http"
 	"strconv"
 
@@ -76,7 +77,7 @@ var userInput entity.EditAccountBind
 	loginUser, ok := c.Get("user")
 	if !ok {
 
-		library.FailedResponse(c, http.StatusInternalServerError, "failed to generate login user", nil)
+		library.FailedResponse(c, http.StatusInternalServerError, "failed to generate login user", errors.New("you are not authorized"))
 
 	}
 
