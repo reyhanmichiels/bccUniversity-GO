@@ -64,7 +64,7 @@ func (rest *Rest) Login(c *gin.Context) {
 
 func (rest *Rest) EditAccount(c *gin.Context) {
 
-var userInput entity.EditAccountBind
+	var userInput entity.EditAccountBind
 
 	err := c.ShouldBindJSON(&userInput)
 	if err != nil {
@@ -110,8 +110,9 @@ func (rest *Rest) AddUserToClass(c *gin.Context) {
 	loginUser, ok := c.Get("user")
 	if !ok {
 
-		library.FailedResponse(c, http.StatusInternalServerError, "failed to generate login user", nil)
-
+		library.FailedResponse(c, http.StatusInternalServerError, "failed to generate login user", errors.New("you are not authorized"))
+		return
+		
 	}
 
 	errObject := rest.uc.User.AddUserToClassUseCase(loginUser.(entity.User), userInput.ClassCode)
