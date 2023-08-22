@@ -3,8 +3,10 @@ package rest
 import (
 	"bcc-university/src/business/entity"
 	"bcc-university/src/business/usecase"
+	"bcc-university/src/sdk/library"
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -165,11 +167,11 @@ func TestLogin(t *testing.T) {
 
 			}
 			engine.ServeHTTP(response, request)
-			fmt.Println(response.Body, "ini response body")
+
 			var jsonResponse map[string]any
 			err = json.Unmarshal(response.Body.Bytes(), &jsonResponse)
 			if err != nil {
-				
+
 				t.Fatal(err.Error())
 
 			}
@@ -183,6 +185,393 @@ func TestLogin(t *testing.T) {
 
 		})
 
+	}
+
+}
+
+// func TestEditAccount(t *testing.T) {
+
+// 	userInput := []entity.EditAccountBind{
+// 		{},
+// 		{
+// 			Username: "test2",
+// 		},
+// 		{
+// 			Username: "test3",
+// 		},
+// 		{
+// 			Username: "test 4",
+// 		},
+// 	}
+
+// 	for i, v := range userInput {
+
+// 		t.Run(fmt.Sprintf("edit account testing %d", i+1), func(t *testing.T) {
+
+// 			engine := gin.Default()
+// 			engine.POST("/api/v1/user", userRest.EditAccount)
+// 			callFunction := userUseCaseMock.Mock.On("LoginUseCase", v).Return(nil)
+
+// 			loginUser := entity.User{}
+
+// 			if i == 0 {
+
+// 				jsonData, err := json.Marshal(v)
+// 				if err != nil {
+
+// 					t.Fatal(err.Error())
+
+// 				}
+
+// 				response := httptest.NewRecorder()
+// 				request, err := http.NewRequest("POST", "/api/v1/login", bytes.NewBuffer(jsonData))
+// 				if err != nil {
+
+// 					t.Fatal(err.Error())
+
+// 				}
+// 				engine.ServeHTTP(response, request)
+
+// 				var jsonResponse map[string]any
+// 				err = json.Unmarshal(response.Body.Bytes(), &jsonResponse)
+// 				if err != nil {
+
+// 					t.Fatal(err.Error())
+
+// 				}
+
+// 				assert.Equal(t, http.StatusBadRequest, response.Code, "status code should be equal")
+// 				assert.Equal(t, "failed to bind input", jsonResponse["message"], "message should be equal")
+// 				assert.Equal(t, "error", jsonResponse["status"], "status should be equal")
+
+// 			}
+
+// 			if i == 1 {
+
+// 				jsonData, err := json.Marshal(v)
+// 				if err != nil {
+
+// 					t.Fatal(err.Error())
+
+// 				}
+
+// 				response := httptest.NewRecorder()
+// 				request, err := http.NewRequest("POST", "/api/v1/login", bytes.NewBuffer(jsonData))
+// 				if err != nil {
+
+// 					t.Fatal(err.Error())
+
+// 				}
+// 				engine.ServeHTTP(response, request)
+
+// 				var jsonResponse map[string]any
+// 				err = json.Unmarshal(response.Body.Bytes(), &jsonResponse)
+// 				if err != nil {
+
+// 					t.Fatal(err.Error())
+
+// 				}
+
+// 				assert.Equal(t, http.StatusInternalServerError, response.Code, "status code should be equal")
+// 				assert.Equal(t, "failed to generate login user", jsonResponse["message"], "message should be equal")
+// 				assert.Equal(t, "error", jsonResponse["status"], "status should be equal")
+
+// 			}
+
+// 			if i > 1 {
+
+// 				callFunction.Unset()
+
+// 			}
+
+// 		})
+
+// 	}
+
+// }
+
+func TestEditAccountPath1(t *testing.T) {
+
+	userInput := []entity.EditAccountBind{
+		{},
+		{},
+		{},
+		{},
+		{},
+	}
+
+	for i, v := range userInput {
+
+		t.Run(fmt.Sprintf("path 1 edit account testing %d", i+1), func(t *testing.T) {
+
+			engine := gin.Default()
+			engine.POST("/api/v1/user", userRest.EditAccount)
+
+			jsonData, err := json.Marshal(v)
+			if err != nil {
+
+				t.Fatal(err.Error())
+
+			}
+
+			response := httptest.NewRecorder()
+			request, err := http.NewRequest("POST", "/api/v1/user", bytes.NewBuffer(jsonData))
+			if err != nil {
+
+				t.Fatal(err.Error())
+
+			}
+			engine.ServeHTTP(response, request)
+
+			var jsonResponse map[string]any
+			err = json.Unmarshal(response.Body.Bytes(), &jsonResponse)
+			if err != nil {
+
+				t.Fatal(err.Error())
+
+			}
+
+			assert.Equal(t, http.StatusBadRequest, response.Code, "status code should be equal")
+			assert.Equal(t, "failed to bind input", jsonResponse["message"], "message should be equal")
+			assert.Equal(t, "error", jsonResponse["status"], "status should be equal")
+
+		})
+
+	}
+
+}
+
+func TestEditAccountPath2(t *testing.T) {
+
+	userInput := []entity.EditAccountBind{
+		{
+			Username: "testuser1",
+		},
+		{
+			Username: "testuser2",
+		},
+		{
+			Username: "testuser3",
+		},
+		{
+			Username: "testuser4",
+		},
+		{
+			Username: "testuser5",
+		},
+	}
+
+	for i, v := range userInput {
+
+		t.Run(fmt.Sprintf("path 2 edit account testing %d", i+1), func(t *testing.T) {
+
+			engine := gin.Default()
+			engine.POST("/api/v1/user", userRest.EditAccount)
+
+			jsonData, err := json.Marshal(v)
+			if err != nil {
+
+				t.Fatal(err.Error())
+
+			}
+
+			response := httptest.NewRecorder()
+			request, err := http.NewRequest("POST", "/api/v1/user", bytes.NewBuffer(jsonData))
+			if err != nil {
+
+				t.Fatal(err.Error())
+
+			}
+			engine.ServeHTTP(response, request)
+
+			var jsonResponse map[string]any
+			err = json.Unmarshal(response.Body.Bytes(), &jsonResponse)
+			if err != nil {
+
+				t.Fatal(err.Error())
+
+			}
+
+			assert.Equal(t, http.StatusInternalServerError, response.Code, "status code should be equal")
+			assert.Equal(t, "failed to generate login user", jsonResponse["message"], "message should be equal")
+			assert.Equal(t, "error", jsonResponse["status"], "status should be equal")
+
+		})
+
+	}
+
+}
+
+func TestEditAccountPath3(t *testing.T) {
+
+	userInput := []entity.EditAccountBind{
+		{
+			Username: "testuser1",
+		},
+		{
+			Username: "testuser2",
+		},
+		{
+			Username: "testuser3",
+		},
+		{
+			Username: "testuser4",
+		},
+		{
+			Username: "testuser5",
+		},
+	}
+
+	for i, v := range userInput {
+
+		t.Run(fmt.Sprintf("path 3 edit account testing %d", i+1), func(t *testing.T) {
+
+			engine := gin.Default()
+			engine.POST("/api/v1/user", setUserLogin, userRest.EditAccount)
+
+			errObject := library.ErrorObject{
+				Code:    http.StatusInternalServerError,
+				Message: "test",
+				Err:     errors.New("test"),
+			}
+			functionCall := userUseCaseMock.Mock.On("EditAccountUseCase", v, getLoginUser()).Return(entity.UserApi{}, errObject)
+
+			jsonData, err := json.Marshal(v)
+			if err != nil {
+
+				t.Fatal(err.Error())
+
+			}
+
+			response := httptest.NewRecorder()
+			request, err := http.NewRequest("POST", "/api/v1/user", bytes.NewBuffer(jsonData))
+			if err != nil {
+
+				t.Fatal(err.Error())
+
+			}
+			engine.ServeHTTP(response, request)
+
+			var jsonResponse map[string]any
+			err = json.Unmarshal(response.Body.Bytes(), &jsonResponse)
+			if err != nil {
+
+				t.Fatal(err.Error())
+
+			}
+
+			assert.Equal(t, http.StatusInternalServerError, response.Code, "status code should be equal")
+			assert.Equal(t, "test", jsonResponse["message"], "message should be equal")
+			assert.Equal(t, "error", jsonResponse["status"], "status should be equal")
+
+			functionCall.Unset()
+		})
+
+	}
+
+}
+
+func TestEditAccountPath4(t *testing.T) {
+
+	userInput := []entity.EditAccountBind{
+		{
+			Username: "testuser1",
+		},
+		{
+			Username: "testuser2",
+		},
+		{
+			Username: "testuser3",
+		},
+		{
+			Username: "testuser4",
+		},
+		{
+			Username: "testuser5",
+		},
+	}
+
+	for i, v := range userInput {
+
+		t.Run(fmt.Sprintf("path 4 edit account testing %d", i+1), func(t *testing.T) {
+
+			engine := gin.Default()
+			engine.POST("/api/v1/user", setUserLogin, userRest.EditAccount)
+
+			userApi := entity.UserApi{
+				Name:     getLoginUser().Name,
+				Username: v.Username,
+				Email:    getLoginUser().Email,
+				Role:     getLoginUser().Role,
+			}
+			functionCall := userUseCaseMock.Mock.On("EditAccountUseCase", v, getLoginUser()).Return(userApi, nil)
+
+			jsonData, err := json.Marshal(v)
+			if err != nil {
+
+				t.Fatal(err.Error())
+
+			}
+
+			response := httptest.NewRecorder()
+			request, err := http.NewRequest("POST", "/api/v1/user", bytes.NewBuffer(jsonData))
+			if err != nil {
+
+				t.Fatal(err.Error())
+
+			}
+			engine.ServeHTTP(response, request)
+
+			var jsonResponse map[string]any
+			err = json.Unmarshal(response.Body.Bytes(), &jsonResponse)
+			if err != nil {
+
+				t.Fatal(err.Error())
+
+			}
+
+			userResponse := jsonResponse["data"].(map[string]any)
+
+			assert.Equal(t, http.StatusAccepted, response.Code, "status code should be equal")
+			assert.Equal(t, "successfully edited", jsonResponse["message"], "message should be equal")
+			assert.Equal(t, "success", jsonResponse["status"], "status should be equal")
+			assert.Equal(t, userApi.Name, userResponse["name"], "name should be equal")
+			assert.Equal(t, userApi.Username, userResponse["username"], "username should be equal")
+			assert.Equal(t, userApi.Email, userResponse["email"], "email should be equal")
+			assert.Equal(t, userApi.Role, userResponse["role"], "role should be equal")
+
+			functionCall.Unset()
+
+		})
+
+	}
+
+}
+
+func setUserLogin(c *gin.Context) {
+
+	c.Set("user", entity.User{
+		Name:     "test",
+		Username: "test",
+		Email:    "test@test.com",
+		Password: "testtest",
+		Role:     "user",
+		Student:  entity.Student{},
+		Classes:  []entity.Class{},
+	})
+
+}
+
+func getLoginUser() entity.User {
+
+	return entity.User{
+		Name:     "test",
+		Username: "test",
+		Email:    "test@test.com",
+		Password: "testtest",
+		Role:     "user",
+		Student:  entity.Student{},
+		Classes:  []entity.Class{},
 	}
 
 }

@@ -31,7 +31,15 @@ func (userUseCaseMock *UserUseCaseMock) LoginUseCase(userInput entity.LoginBind,
 
 }
 func (userUseCaseMock *UserUseCaseMock) EditAccountUseCase(userInput entity.EditAccountBind, loginUser entity.User) (entity.UserApi, interface{}) {
-	return entity.UserApi{}, nil
+
+	args := userUseCaseMock.Mock.Called(userInput, loginUser)
+	if args[1] != nil {
+
+		return entity.UserApi{}, args[1]
+
+	}
+
+	return args[0].(entity.UserApi), nil
 }
 func (userUseCaseMock *UserUseCaseMock) AddUserToClassUseCase(loginUser entity.User, classCode string) interface{} {
 	return nil
