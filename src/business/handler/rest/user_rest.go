@@ -78,6 +78,7 @@ var userInput entity.EditAccountBind
 	if !ok {
 
 		library.FailedResponse(c, http.StatusInternalServerError, "failed to generate login user", errors.New("you are not authorized"))
+		return
 
 	}
 
