@@ -808,16 +808,16 @@ func TestDropClassPath1(t *testing.T) {
 			response := httptest.NewRecorder()
 			request, err := http.NewRequest("DELETE", "/api/v1/user/class/test", nil)
 			if err != nil {
-				
+
 				t.Fatal(err.Error())
 
 			}
 			engine.ServeHTTP(response, request)
-			
-			var jsonResponse map[string]any 
+
+			var jsonResponse map[string]any
 			err = json.Unmarshal(response.Body.Bytes(), &jsonResponse)
 			if err != nil {
-				
+
 				t.Fatal(err.Error())
 
 			}
@@ -831,6 +831,43 @@ func TestDropClassPath1(t *testing.T) {
 	}
 
 }
+
+func TestDropClassPath2(t *testing.T) {
+
+	for i := 1; i <= 5; i++ {
+
+		t.Run(fmt.Sprintf("path 2 drop class testing %d", i), func(t *testing.T) {
+
+			engine := gin.Default()
+			engine.DELETE("/api/v1/user/class/:id", userRest.DropClass)
+
+			response := httptest.NewRecorder()
+			request, err := http.NewRequest("DELETE", fmt.Sprintf("/api/v1/user/class/%d", i), nil)
+			if err != nil {
+
+				t.Fatal(err.Error())
+
+			}
+			engine.ServeHTTP(response, request)
+
+			var jsonResponse map[string]any
+			err = json.Unmarshal(response.Body.Bytes(), &jsonResponse)
+			if err != nil {
+
+				t.Fatal(err.Error())
+
+			}
+
+			assert.Equal(t, http.StatusInternalServerError, response.Code, "status code should be equal")
+			assert.Equal(t, "failed to generate login user", jsonResponse["message"], "message should be equal")
+			assert.Equal(t, "error", jsonResponse["status"], "status should be equal")
+
+		})
+
+	}
+
+}
+
 func setUserLogin(c *gin.Context) {
 
 	c.Set("user", entity.User{
