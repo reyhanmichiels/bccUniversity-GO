@@ -868,6 +868,52 @@ func TestDropClassPath2(t *testing.T) {
 
 }
 
+func TestDropClassPath3(t *testing.T) {
+
+	for i := 1; i <= 5; i++ {
+
+		t.Run(fmt.Sprintf("path 3 drop class testing %d", i), func(t *testing.T) {
+
+			errObject := library.ErrorObject{
+				Code:    http.StatusInternalServerError,
+				Message: "test",
+				Err:     errors.New("test"),
+			}
+			functionCall := userUseCaseMock.Mock.On("DropClassUseCase", getLoginUser(), uint(i)).Return(errObject)
+
+			engine := gin.Default()
+			engine.DELETE("/api/v1/user/class/:id", setUserLogin, userRest.DropClass)
+
+			response := httptest.NewRecorder()
+			request, err := http.NewRequest("DELETE", fmt.Sprintf("/api/v1/user/class/%d", i), nil)
+			if err != nil {
+
+				t.Fatal(err.Error())
+
+			}
+			engine.ServeHTTP(response, request)
+
+			var jsonResponse map[string]any
+			err = json.Unmarshal(response.Body.Bytes(), &jsonResponse)
+			if err != nil {
+
+				t.Fatal(err.Error())
+
+			}
+
+			assert.Equal(t, http.StatusInternalServerError, response.Code, "status code should be equal")
+			assert.Equal(t, "error", jsonResponse["status"], "status should be equal")
+			assert.Equal(t, "test", jsonResponse["message"], "message should be equal")
+			assert.Equal(t, "test", jsonResponse["error"], "error should be equal")
+
+			functionCall.Unset()
+
+		})
+
+	}
+
+}
+
 func setUserLogin(c *gin.Context) {
 
 	c.Set("user", entity.User{
