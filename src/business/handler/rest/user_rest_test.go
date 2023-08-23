@@ -660,6 +660,77 @@ func TestAddUserToClassPath2(t *testing.T) {
 
 }
 
+func TestAddUserToClassPath3(t *testing.T) {
+
+	userInput := []entity.AddClassBind{
+		{
+			ClassCode: "test1",
+		},
+		{
+			ClassCode: "test2",
+		},
+		{
+			ClassCode: "test3",
+		},
+		{
+			ClassCode: "test4",
+		},
+		{
+			ClassCode: "test5",
+		},
+	}
+
+	for i, v := range userInput {
+
+		t.Run(fmt.Sprintf("path 3 add user to class testing %d", i+1), func(t *testing.T) {
+
+			errObject := library.ErrorObject{
+				Code:    http.StatusInternalServerError,
+				Message: "test",
+				Err:     errors.New("test"),
+			}
+			functionCall := userUseCaseMock.Mock.On("AddUserToClassUseCase", getLoginUser(), v.ClassCode).Return(errObject)
+
+			engine := gin.Default()
+			engine.POST("/api/v1/user/class", setUserLogin, userRest.AddUserToClass)
+
+			jsonData, err := json.Marshal(v)
+			if err != nil {
+
+				t.Fatal(err.Error())
+
+			}
+
+			response := httptest.NewRecorder()
+			request, err := http.NewRequest("POST", "/api/v1/user/class", bytes.NewBuffer(jsonData))
+			if err != nil {
+
+				t.Fatal(err.Error())
+
+			}
+			engine.ServeHTTP(response, request)
+
+			var jsonResponse map[string]any
+			err = json.Unmarshal(response.Body.Bytes(), &jsonResponse)
+			if err != nil {
+
+				t.Fatal(err.Error())
+
+			}
+
+			assert.Equal(t, http.StatusInternalServerError, response.Code, "status code should be equal")
+			assert.Equal(t, "error", jsonResponse["status"], "status should be equal")
+			assert.Equal(t, "test", jsonResponse["message"], "message should be equal")
+			assert.Equal(t, "test", jsonResponse["error"], "error should be equal")
+
+			functionCall.Unset()
+
+		})
+
+	}
+
+}
+
 func setUserLogin(c *gin.Context) {
 
 	c.Set("user", entity.User{
