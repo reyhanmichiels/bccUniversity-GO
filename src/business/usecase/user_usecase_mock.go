@@ -42,11 +42,14 @@ func (userUseCaseMock *UserUseCaseMock) EditAccountUseCase(userInput entity.Edit
 	return args[0].(entity.UserApi), nil
 }
 func (userUseCaseMock *UserUseCaseMock) AddUserToClassUseCase(loginUser entity.User, classCode string) interface{} {
-	
+
 	args := userUseCaseMock.Mock.Called(loginUser, classCode)
 	return args[0]
 
 }
 func (userUseCaseMock *UserUseCaseMock) DropClassUseCase(loginUser entity.User, classId uint) interface{} {
-	return nil
+
+	args := userUseCaseMock.Mock.Called(loginUser, classId)
+	return args[0]
+
 }
