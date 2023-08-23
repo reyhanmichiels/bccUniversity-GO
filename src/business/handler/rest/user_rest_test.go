@@ -914,6 +914,47 @@ func TestDropClassPath3(t *testing.T) {
 
 }
 
+func TestDropClassPath4(t *testing.T) {
+
+	for i := 1; i <= 5; i++ {
+
+		t.Run(fmt.Sprintf("path 4 drop class testing %d", i), func(t *testing.T) {
+
+			functionCall := userUseCaseMock.Mock.On("DropClassUseCase", getLoginUser(), uint(i)).Return(nil)
+
+			engine := gin.Default()
+			engine.DELETE("/api/v1/user/class/:id", setUserLogin, userRest.DropClass)
+
+			response := httptest.NewRecorder()
+			request, err := http.NewRequest("DELETE", fmt.Sprintf("/api/v1/user/class/%d", i), nil)
+			if err != nil {
+
+				t.Fatal(err.Error())
+
+			}
+			engine.ServeHTTP(response, request)
+
+			var jsonResponse map[string]any
+			err = json.Unmarshal(response.Body.Bytes(), &jsonResponse)
+			if err != nil {
+
+				t.Fatal(err.Error())
+
+			}
+
+			assert.Equal(t, http.StatusOK, response.Code, "status code should be equal")
+			assert.Equal(t, "success", jsonResponse["status"], "status should be equal")
+			assert.Equal(t, "successfully drop class", jsonResponse["message"], "message should be equal")
+			assert.Equal(t, nil, jsonResponse["data"], "error should be equal")
+
+			functionCall.Unset()
+
+		})
+
+	}
+
+}
+
 func setUserLogin(c *gin.Context) {
 
 	c.Set("user", entity.User{
