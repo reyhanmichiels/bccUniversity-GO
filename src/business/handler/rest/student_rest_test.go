@@ -1,7 +1,10 @@
 package rest
 
 import (
+	"bcc-university/src/business/usecase"
+	"bcc-university/src/sdk/library"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -9,16 +12,27 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 )
+
+var studentUseCaseMock = usecase.StudentUseCaseMock{
+	Mock: mock.Mock{},
+}
+
+var studentRest = &Rest{
+	uc: &usecase.UseCase{
+		Student: &studentUseCaseMock,
+	},
+}
 
 func TestClaimStudentNumberPath1(t *testing.T) {
 
 	for i := 1; i <= 5; i++ {
 
-		t.Run(fmt.Sprintf("path 1 clain student number testing %d", i), func(t *testing.T) {
+		t.Run(fmt.Sprintf("path 1 claim student number testing %d", i), func(t *testing.T) {
 
 			engine := gin.Default()
-			engine.GET("/api/v1/user/student-number", userRest.ClaimStudentNumber)
+			engine.GET("/api/v1/user/student-number", studentRest.ClaimStudentNumber)
 
 			response := httptest.NewRecorder()
 			request, err := http.NewRequest("GET", "/api/v1/user/student-number", nil)
@@ -40,6 +54,51 @@ func TestClaimStudentNumberPath1(t *testing.T) {
 			assert.Equal(t, http.StatusInternalServerError, response.Code, "status code should be equal")
 			assert.Equal(t, "failed to generate login user", jsonResponse["message"], "message should be equal")
 			assert.Equal(t, "error", jsonResponse["status"], "status should be equal")
+
+		})
+
+	}
+
+}
+
+func TestClaimStudentNumberPath2(t *testing.T) {
+
+	for i := 1; i <= 5; i++ {
+
+		errObject := library.ErrorObject{
+			Code:    http.StatusInternalServerError,
+			Message: "test",
+			Err:     errors.New("test"),
+		}
+		functionCall := studentUseCaseMock.Mock.On("ClaimStudentNumberUseCase", getLoginUser()).Return(nil, errObject)
+
+		t.Run(fmt.Sprintf("path 2 claim student number testing %d", i), func(t *testing.T) {
+
+			engine := gin.Default()
+			engine.GET("/api/v1/user/student-number", setUserLogin, studentRest.ClaimStudentNumber)
+
+			response := httptest.NewRecorder()
+			request, err := http.NewRequest("GET", "/api/v1/user/student-number", nil)
+			if err != nil {
+
+				t.Fatal(err.Error())
+
+			}
+			engine.ServeHTTP(response, request)
+
+			var jsonResponse map[string]any
+			err = json.Unmarshal(response.Body.Bytes(), &jsonResponse)
+			if err != nil {
+
+				t.Fatal(err.Error())
+
+			}
+
+			assert.Equal(t, http.StatusInternalServerError, response.Code, "status code should be equal")
+			assert.Equal(t, "test", jsonResponse["message"], "message should be equal")
+			assert.Equal(t, "error", jsonResponse["status"], "status should be equal")
+
+			functionCall.Unset()
 
 		})
 
