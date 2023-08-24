@@ -20,7 +20,8 @@ func (classUseCaseMock *ClassUseCaseMock) GetAllClassUseCase() ([]entity.ClassAp
 		return nil, args[1].(library.ErrorObject)
 
 	}
-	return []entity.ClassApi{}, nil
+
+	return args[0].([]entity.ClassApi), nil
 
 }
 
