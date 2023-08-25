@@ -404,3 +404,40 @@ func TestAdmAddUserToClassPath2(t *testing.T) {
 	}
 
 }
+
+func TestAdmAddUserToClassPath3(t *testing.T) {
+
+	for i := 1; i <= 5; i++ {
+
+		t.Run(fmt.Sprintf("path 3 remove user from class testing %d", i), func(t *testing.T) {
+
+			engine := gin.Default()
+			engine.POST("/api/v1/class/:classId/user/:userId", classRest.RemoveUserFromClass)
+
+			response := httptest.NewRecorder()
+			request, err := http.NewRequest("POST", fmt.Sprintf("/api/v1/class/%d/user/%[1]d", i), nil)
+			if err != nil {
+
+				t.Fatal(err.Error())
+
+			}
+			engine.ServeHTTP(response, request)
+
+			var jsonResponse map[string]any
+			err = json.Unmarshal(response.Body.Bytes(), &jsonResponse)
+			if err != nil {
+
+				t.Fatal(err.Error())
+
+			}
+
+			assert.Equal(t, http.StatusInternalServerError, response.Code, "http status code should be equal")
+			assert.Equal(t, "error", jsonResponse["status"], "status should be equal")
+			assert.Equal(t, "failed to generate login user", jsonResponse["message"], "message should be equal")
+			assert.Equal(t, "you are not authorized", jsonResponse["error"], "error should be equal")
+
+		})
+
+	}
+
+}
