@@ -1314,3 +1314,39 @@ func TestDeleteClassPath4(t *testing.T) {
 	}
 
 }
+
+func TestGetClassParticipantPath1(t *testing.T) {
+
+	for i := 1; i <= 5; i++ {
+
+		t.Run(fmt.Sprintf("path 1 get class participant testing %d", i), func(t *testing.T) {
+
+			engine := gin.Default()
+			engine.GET("/api/v1/class/:classId/users", classRest.GetClassParticipant)
+
+			response := httptest.NewRecorder()
+			request, err := http.NewRequest("GET", "/api/v1/class/test/users", nil)
+			if err != nil {
+
+				t.Fatal(err.Error())
+
+			}
+			engine.ServeHTTP(response, request)
+
+			var jsonResponse map[string]any
+			err = json.Unmarshal(response.Body.Bytes(), &jsonResponse)
+			if err != nil {
+
+				t.Fatal(err.Error())
+
+			}
+
+			assert.Equal(t, http.StatusBadRequest, response.Code, "http status code should be equal")
+			assert.Equal(t, "failed to convert class id to int", jsonResponse["message"], "message should be equal")
+			assert.Equal(t, "error", jsonResponse["status"], "status should be equal")
+
+		})
+
+	}
+
+}
