@@ -69,7 +69,15 @@ func (classUseCaseMock *ClassUseCaseMock) CreateClassUseCase(userInput entity.Cr
 
 func (classUseCaseMock *ClassUseCaseMock) EditClassUseCase(userInput entity.CreateUpdateClassBind, loginUser entity.User, classId uint) (entity.CreateUpdateClassApi, interface{}) {
 
-	return entity.CreateUpdateClassApi{}, nil
+	args := classUseCaseMock.Mock.Called(userInput, loginUser, classId)
+
+	if args[1] != nil {
+
+		return entity.CreateUpdateClassApi{}, args[1].(library.ErrorObject)
+
+	}
+
+	return args[0].(entity.CreateUpdateClassApi), nil
 
 }
 
