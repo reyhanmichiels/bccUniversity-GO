@@ -573,7 +573,6 @@ func TestCreateClassPath1(t *testing.T) {
 			assert.Equal(t, "error", jsonResponse["status"], "status should be equal")
 			assert.Equal(t, "failed to bind input", jsonResponse["message"], "message should be equal")
 
-
 		})
 
 	}
@@ -584,30 +583,30 @@ func TestCreateClassPath2(t *testing.T) {
 
 	userInput := []entity.CreateUpdateClassBind{
 		{
-			Name: "testname1",
+			Name:      "testname1",
 			Course_id: 1,
 		},
 		{
-			Name: "testname2",
+			Name:      "testname2",
 			Course_id: 2,
 		},
 		{
-			Name: "testname3",
+			Name:      "testname3",
 			Course_id: 3,
 		},
 		{
-			Name: "testname4",
+			Name:      "testname4",
 			Course_id: 4,
 		},
 		{
-			Name: "testname5",
+			Name:      "testname5",
 			Course_id: 5,
 		},
 	}
 
 	for i, v := range userInput {
 
-		t.Run(fmt.Sprintf("path 1 Create Class testing %d", i), func(t *testing.T) {
+		t.Run(fmt.Sprintf("path 2 Create Class testing %d", i), func(t *testing.T) {
 
 			engine := gin.Default()
 			engine.POST("/api/v1/class", classRest.CreateClass)
@@ -641,6 +640,81 @@ func TestCreateClassPath2(t *testing.T) {
 			assert.Equal(t, "failed to generate login user", jsonResponse["message"], "message should be equal")
 			assert.Equal(t, "you are not authorized", jsonResponse["error"], "error should be equal")
 
+		})
+
+	}
+
+}
+
+func TestCreateClassPath3(t *testing.T) {
+
+	userInput := []entity.CreateUpdateClassBind{
+		{
+			Name:      "testname1",
+			Course_id: 1,
+		},
+		{
+			Name:      "testname2",
+			Course_id: 2,
+		},
+		{
+			Name:      "testname3",
+			Course_id: 3,
+		},
+		{
+			Name:      "testname4",
+			Course_id: 4,
+		},
+		{
+			Name:      "testname5",
+			Course_id: 5,
+		},
+	}
+
+	for i, v := range userInput {
+
+		t.Run(fmt.Sprintf("path 3 Create Class testing %d", i), func(t *testing.T) {
+
+			errObject := library.ErrorObject{
+				Code:    http.StatusInternalServerError,
+				Message: "test",
+				Err:     errors.New("test"),
+			}
+			functionCall := classUsecaseMock.Mock.On("CreateClassUseCase", v, getLoginUser()).Return(entity.CreateUpdateClassApi{}, errObject)
+
+			engine := gin.Default()
+			engine.POST("/api/v1/class", setUserLogin, classRest.CreateClass)
+
+			jsonInput, err := json.Marshal(v)
+			if err != nil {
+
+				t.Fatal(err.Error())
+
+			}
+
+			response := httptest.NewRecorder()
+			request, err := http.NewRequest("POST", "/api/v1/class", bytes.NewBuffer(jsonInput))
+			if err != nil {
+
+				t.Fatal(err.Error())
+
+			}
+			engine.ServeHTTP(response, request)
+
+			var jsonResponse map[string]any
+			err = json.Unmarshal(response.Body.Bytes(), &jsonResponse)
+			if err != nil {
+
+				t.Fatal(err.Error())
+
+			}
+
+			assert.Equal(t, http.StatusInternalServerError, response.Code, "http status code should be equal")
+			assert.Equal(t, "error", jsonResponse["status"], "status should be equal")
+			assert.Equal(t, "test", jsonResponse["message"], "message should be equal")
+			assert.Equal(t, "test", jsonResponse["error"], "error should be equal")
+
+			functionCall.Unset()
 
 		})
 
