@@ -1386,3 +1386,49 @@ func TestGetClassParticipantPath2(t *testing.T) {
 	}
 
 }
+
+func TestGetClassParticipantPath3(t *testing.T) {
+
+	for i := 1; i <= 5; i++ {
+
+		t.Run(fmt.Sprintf("path 2 get class participant testing %d", i), func(t *testing.T) {
+
+			errObject := library.ErrorObject{
+				Code: http.StatusInternalServerError,
+				Message: "test",
+				Err: errors.New("test"),
+			}
+			functionCall := classUsecaseMock.Mock.On("GetClassParticipantUseCase", getLoginUser(), uint(i)).Return(nil, errObject)
+
+			engine := gin.Default()
+			engine.GET("/api/v1/class/:classId/users", setUserLogin, classRest.GetClassParticipant)
+
+			response := httptest.NewRecorder()
+			request, err := http.NewRequest("GET", fmt.Sprintf("/api/v1/class/%d/users", i), nil)
+			if err != nil {
+
+				t.Fatal(err.Error())
+
+			}
+			engine.ServeHTTP(response, request)
+
+			var jsonResponse map[string]any
+			err = json.Unmarshal(response.Body.Bytes(), &jsonResponse)
+			if err != nil {
+
+				t.Fatal(err.Error())
+
+			}
+
+			assert.Equal(t, http.StatusInternalServerError, response.Code, "http status code should be equal")
+			assert.Equal(t, "test", jsonResponse["message"], "message should be equal")
+			assert.Equal(t, "error", jsonResponse["status"], "status should be equal")
+			assert.Equal(t, "test", jsonResponse["error"], "error should be equal")
+
+
+			functionCall.Unset()
+		})
+
+	}
+
+}
