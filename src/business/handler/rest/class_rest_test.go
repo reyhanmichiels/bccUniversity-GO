@@ -1391,12 +1391,12 @@ func TestGetClassParticipantPath3(t *testing.T) {
 
 	for i := 1; i <= 5; i++ {
 
-		t.Run(fmt.Sprintf("path 2 get class participant testing %d", i), func(t *testing.T) {
+		t.Run(fmt.Sprintf("path 3 get class participant testing %d", i), func(t *testing.T) {
 
 			errObject := library.ErrorObject{
-				Code: http.StatusInternalServerError,
+				Code:    http.StatusInternalServerError,
 				Message: "test",
-				Err: errors.New("test"),
+				Err:     errors.New("test"),
 			}
 			functionCall := classUsecaseMock.Mock.On("GetClassParticipantUseCase", getLoginUser(), uint(i)).Return(nil, errObject)
 
@@ -1425,8 +1425,74 @@ func TestGetClassParticipantPath3(t *testing.T) {
 			assert.Equal(t, "error", jsonResponse["status"], "status should be equal")
 			assert.Equal(t, "test", jsonResponse["error"], "error should be equal")
 
+			functionCall.Unset()
+		})
+
+	}
+
+}
+
+func TestGetClassParticipantPath4(t *testing.T) {
+
+	for i := 1; i <= 5; i++ {
+
+		t.Run(fmt.Sprintf("path 4 get class participant testing %d", i), func(t *testing.T) {
+
+			user := []struct {
+				Name string
+			}{
+				{"test"},
+				{"test"},
+			}
+			classApi := entity.ClassParticipantApi{
+				Name:        "test",
+				Course_id:   uint(i),
+				Participant: i,
+				ClassCode:   "test",
+				Users:       user,
+			}
+			functionCall := classUsecaseMock.Mock.On("GetClassParticipantUseCase", getLoginUser(), uint(i)).Return(classApi, nil)
+
+			engine := gin.Default()
+			engine.GET("/api/v1/class/:classId/users", setUserLogin, classRest.GetClassParticipant)
+
+			response := httptest.NewRecorder()
+			request, err := http.NewRequest("GET", fmt.Sprintf("/api/v1/class/%d/users", i), nil)
+			if err != nil {
+
+				t.Fatal(err.Error())
+
+			}
+			engine.ServeHTTP(response, request)
+
+			var jsonResponse map[string]any
+			err = json.Unmarshal(response.Body.Bytes(), &jsonResponse)
+			if err != nil {
+
+				t.Fatal(err.Error())
+
+			}
+
+			dataresponse := jsonResponse["data"].(map[string]any)
+
+			assert.Equal(t, http.StatusOK, response.Code, "http status code should be equal")
+			assert.Equal(t, "successfully get class participant", jsonResponse["message"], "message should be equal")
+			assert.Equal(t, "success", jsonResponse["status"], "status should be equal")
+			assert.Equal(t, classApi.Name, dataresponse["name"], "class name should be equal")
+			assert.Equal(t, classApi.ClassCode, dataresponse["class_code"], "class class_code should be equal")
+			assert.Equal(t, classApi.Course_id, uint(dataresponse["course_id"].(float64)), "class course_id should be equal")
+			assert.Equal(t, classApi.Participant, int(dataresponse["participant"].(float64)), "class participant should be equal")
+
+			for i, v := range dataresponse["users"].([]interface{}) {
+				
+				v := v.(map[string]any)
+
+				assert.Equal(t, classApi.Users.([]struct{ Name string })[i].Name, v["Name"], "user name should be equal")
+
+			}
 
 			functionCall.Unset()
+
 		})
 
 	}
