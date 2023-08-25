@@ -190,7 +190,7 @@ func (rest *Rest) DeleteClass(c *gin.Context) {
 	loginUser, ok := c.Get("user")
 	if !ok {
 
-		library.FailedResponse(c, http.StatusInternalServerError, "failed to generate login user", nil)
+		library.FailedResponse(c, http.StatusInternalServerError, "failed to generate login user", errors.New("you are not authorized"))
 		return
 
 	}
