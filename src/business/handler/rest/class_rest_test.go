@@ -993,3 +993,79 @@ func TestEditClassPath3(t *testing.T) {
 	}
 
 }
+
+func TestEditClassPath4(t *testing.T) {
+
+	userInput := []entity.CreateUpdateClassBind{
+		{
+			Name:      "testname1",
+			Course_id: 1,
+		},
+		{
+			Name:      "testname2",
+			Course_id: 2,
+		},
+		{
+			Name:      "testname3",
+			Course_id: 3,
+		},
+		{
+			Name:      "testname4",
+			Course_id: 4,
+		},
+		{
+			Name:      "testname5",
+			Course_id: 5,
+		},
+	}
+
+	for i, v := range userInput {
+
+		t.Run(fmt.Sprintf("path 3 Edit Class testing %d", i), func(t *testing.T) {
+
+			errObject := library.ErrorObject{
+				Code:    http.StatusInternalServerError,
+				Message: "test",
+				Err:     errors.New("test"),
+			}
+			functionCall := classUsecaseMock.Mock.On("EditClassUseCase", v, getLoginUser(), uint(i)).Return(nil, errObject)
+
+			engine := gin.Default()
+			engine.POST("/api/v1/class/:classId", setUserLogin, classRest.EditClass)
+
+			jsonInput, err := json.Marshal(v)
+			if err != nil {
+
+				t.Fatal(err.Error())
+
+			}
+
+			response := httptest.NewRecorder()
+			request, err := http.NewRequest("POST", fmt.Sprintf("/api/v1/class/%d", i), bytes.NewBuffer(jsonInput))
+			if err != nil {
+
+				t.Fatal(err.Error())
+
+			}
+			engine.ServeHTTP(response, request)
+
+			var jsonResponse map[string]any
+			err = json.Unmarshal(response.Body.Bytes(), &jsonResponse)
+			if err != nil {
+
+				t.Fatal(err.Error())
+
+			}
+
+			assert.Equal(t, http.StatusInternalServerError, response.Code, "http status code should be equal")
+			assert.Equal(t, "test", jsonResponse["message"], "message should be equal")
+			assert.Equal(t, "error", jsonResponse["status"], "status should be equal")
+			assert.Equal(t, "test", jsonResponse["error"], "error should be equal")
+
+			functionCall.Unset()
+
+		})
+
+	}
+
+}
