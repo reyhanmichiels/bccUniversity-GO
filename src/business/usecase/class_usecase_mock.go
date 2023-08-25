@@ -97,6 +97,14 @@ func (classUseCaseMock *ClassUseCaseMock) DeleteClassUseCase(loginUser entity.Us
 
 func (classUseCaseMock *ClassUseCaseMock) GetClassParticipantUseCase(loginUser entity.User, classId uint) (entity.ClassParticipantApi, interface{}) {
 
-	return entity.ClassParticipantApi{}, nil
+	args := classUseCaseMock.Mock.Called(loginUser, classId)
+
+	if args[1] != nil {
+
+		return entity.ClassParticipantApi{}, args[1].(library.ErrorObject)
+
+	}
+
+	return args[0].(entity.ClassParticipantApi), nil
 
 }
