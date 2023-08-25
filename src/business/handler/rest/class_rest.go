@@ -215,6 +215,7 @@ func (rest *Rest) GetClassParticipant(c *gin.Context) {
 	if err != nil {
 
 		library.FailedResponse(c, http.StatusBadRequest, "failed to convert class id to int", err)
+		return
 
 	}
 
@@ -222,7 +223,8 @@ func (rest *Rest) GetClassParticipant(c *gin.Context) {
 	loginUser, ok := c.Get("user")
 	if !ok {
 
-		library.FailedResponse(c, http.StatusInternalServerError, "failed to generate login user", errors.New(""))
+		library.FailedResponse(c, http.StatusInternalServerError, "failed to generate login user", errors.New("you are not authorized"))
+		return
 
 	}
 
