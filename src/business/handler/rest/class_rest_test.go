@@ -4,6 +4,7 @@ import (
 	"bcc-university/src/business/entity"
 	"bcc-university/src/business/usecase"
 	"bcc-university/src/sdk/library"
+	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -520,6 +521,58 @@ func TestAdmAddUserToClassPath5(t *testing.T) {
 			assert.Equal(t, "success", jsonResponse["status"], "status should be equal")
 
 			functionCall.Unset()
+
+		})
+
+	}
+
+}
+
+func TestCreateClass(t *testing.T) {
+
+	userInput := []entity.CreateUpdateClassBind{
+		{},
+		{},
+		{},
+		{},
+		{},
+	}
+
+	for i, v := range userInput {
+
+		t.Run(fmt.Sprintf("path 1 Create Class testing %d", i), func(t *testing.T) {
+
+			engine := gin.Default()
+			engine.POST("/api/v1/class", classRest.CreateClass)
+
+			jsonInput, err := json.Marshal(v)
+			if err != nil {
+
+				t.Fatal(err.Error())
+
+			}
+
+			response := httptest.NewRecorder()
+			request, err := http.NewRequest("POST", "/api/v1/class", bytes.NewBuffer(jsonInput))
+			if err != nil {
+
+				t.Fatal(err.Error())
+
+			}
+			engine.ServeHTTP(response, request)
+
+			var jsonResponse map[string]any
+			err = json.Unmarshal(response.Body.Bytes(), &jsonResponse)
+			if err != nil {
+
+				t.Fatal(err.Error())
+
+			}
+
+			assert.Equal(t, http.StatusBadRequest, response.Code, "http status code should be equal")
+			assert.Equal(t, "error", jsonResponse["status"], "status should be equal")
+			assert.Equal(t, "failed to bind input", jsonResponse["message"], "message should be equal")
+
 
 		})
 
