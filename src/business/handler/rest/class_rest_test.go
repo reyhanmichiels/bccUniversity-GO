@@ -860,3 +860,69 @@ func TestEditClassPath1(t *testing.T) {
 	}
 
 }
+
+func TestEditClassPath2(t *testing.T) {
+
+	userInput := []entity.CreateUpdateClassBind{
+		{
+			Name:      "testname1",
+			Course_id: 1,
+		},
+		{
+			Name:      "testname2",
+			Course_id: 2,
+		},
+		{
+			Name:      "testname3",
+			Course_id: 3,
+		},
+		{
+			Name:      "testname4",
+			Course_id: 4,
+		},
+		{
+			Name:      "testname5",
+			Course_id: 5,
+		},
+	}
+
+	for i, v := range userInput {
+
+		t.Run(fmt.Sprintf("path 2 Edit Class testing %d", i), func(t *testing.T) {
+
+			engine := gin.Default()
+			engine.POST("/api/v1/class/:classId", classRest.EditClass)
+
+			jsonInput, err := json.Marshal(v)
+			if err != nil {
+
+				t.Fatal(err.Error())
+
+			}
+
+			response := httptest.NewRecorder()
+			request, err := http.NewRequest("POST", fmt.Sprintf("/api/v1/class/%s", "test"), bytes.NewBuffer(jsonInput))
+			if err != nil {
+
+				t.Fatal(err.Error())
+
+			}
+			engine.ServeHTTP(response, request)
+
+			var jsonResponse map[string]any
+			err = json.Unmarshal(response.Body.Bytes(), &jsonResponse)
+			if err != nil {
+
+				t.Fatal(err.Error())
+
+			}
+
+			assert.Equal(t, http.StatusBadRequest, response.Code, "http status code should be equal")
+			assert.Equal(t, "failed to convert class id to int", jsonResponse["message"], "message should be equal")
+			assert.Equal(t, "error", jsonResponse["status"], "status should be equal")
+
+		})
+
+	}
+
+}
