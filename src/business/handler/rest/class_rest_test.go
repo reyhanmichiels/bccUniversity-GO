@@ -791,7 +791,6 @@ func TestCreateClassPath4(t *testing.T) {
 			dataResponse := jsonResponse["data"].(map[string]any)
 			fmt.Println(dataResponse)
 			courseResponse := dataResponse["Course"].(map[string]any)
-			// fmt.Println(dataResponse)
 
 			assert.Equal(t, http.StatusCreated, response.Code, "http status code should be equal")
 			assert.Equal(t, "success", jsonResponse["status"], "status should be equal")
@@ -804,6 +803,57 @@ func TestCreateClassPath4(t *testing.T) {
 			assert.Equal(t, classApi.Course.Credit, int(courseResponse["credit"].(float64)), "course credit should be equal")
 
 			functionCall.Unset()
+
+		})
+
+	}
+
+}
+
+func TestEditClassPath1(t *testing.T) {
+
+	userInput := []entity.CreateUpdateClassBind{
+		{},
+		{},
+		{},
+		{},
+		{},
+	}
+
+	for i, v := range userInput {
+
+		t.Run(fmt.Sprintf("path 1 Edit Class testing %d", i), func(t *testing.T) {
+
+			engine := gin.Default()
+			engine.POST("/api/v1/class/:classId", classRest.EditClass)
+
+			jsonInput, err := json.Marshal(v)
+			if err != nil {
+
+				t.Fatal(err.Error())
+
+			}
+
+			response := httptest.NewRecorder()
+			request, err := http.NewRequest("POST", fmt.Sprintf("/api/v1/class/%d", i), bytes.NewBuffer(jsonInput))
+			if err != nil {
+
+				t.Fatal(err.Error())
+
+			}
+			engine.ServeHTTP(response, request)
+
+			var jsonResponse map[string]any
+			err = json.Unmarshal(response.Body.Bytes(), &jsonResponse)
+			if err != nil {
+
+				t.Fatal(err.Error())
+
+			}
+
+			assert.Equal(t, http.StatusBadRequest, response.Code, "http status code should be equal")
+			assert.Equal(t, "error", jsonResponse["status"], "status should be equal")
+			assert.Equal(t, "failed to bind input", jsonResponse["message"], "message should be equal")
 
 		})
 
