@@ -1190,3 +1190,40 @@ func TestDeleteClassPath1(t *testing.T) {
 	}
 
 }
+
+func TestDeletePath2(t *testing.T) {
+
+	for i:= 1; i <= 5; i++ {
+
+		t.Run(fmt.Sprintf("path 2 delete class testing %d",i), func(t *testing.T) {
+
+			engine := gin.Default()
+			engine.DELETE("/api/v1/class/:classId", classRest.DeleteClass)
+
+			response := httptest.NewRecorder()
+			request, err := http.NewRequest("DELETE", fmt.Sprintf("/api/v1/class/%d", i), nil)	
+			if err  != nil {
+
+				t.Fatal(err.Error())
+
+			}
+			engine.ServeHTTP(response, request)
+
+			var jsonResponse map[string]any
+			err = json.Unmarshal(response.Body.Bytes(), &jsonResponse) 
+			if err != nil {
+
+				t.Fatal(err.Error())
+
+			}
+
+			assert.Equal(t, http.StatusInternalServerError, response.Code, "http status code should be equal")
+			assert.Equal(t, "error", jsonResponse["status"], "status should be equal")
+			assert.Equal(t, "failed to generate login user", jsonResponse["message"], "message should be equal")
+			assert.Equal(t, "you are not authorized", jsonResponse["error"], "error should be equal")
+
+		})
+
+	}
+
+}
