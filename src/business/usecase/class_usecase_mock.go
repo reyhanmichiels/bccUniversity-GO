@@ -83,6 +83,14 @@ func (classUseCaseMock *ClassUseCaseMock) EditClassUseCase(userInput entity.Crea
 
 func (classUseCaseMock *ClassUseCaseMock) DeleteClassUseCase(loginUser entity.User, classId uint) interface{} {
 
+	args := classUseCaseMock.Mock.Called(loginUser, classId)
+
+	if args[0] != nil {
+
+		return args[0].(library.ErrorObject)
+
+	}
+
 	return nil
 
 }
