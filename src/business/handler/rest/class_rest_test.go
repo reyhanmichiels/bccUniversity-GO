@@ -486,3 +486,43 @@ func TestAdmAddUserToClassPath4(t *testing.T) {
 	}
 
 }
+
+func TestAdmAddUserToClassPath5(t *testing.T) {
+
+	for i := 1; i <= 5; i++ {
+
+		t.Run(fmt.Sprintf("path 5 admin add user to class testing %d", i), func(t *testing.T) {
+
+			functionCall := classUsecaseMock.Mock.On("AdmAddUserToClassUseCase", getLoginUser(), uint(i), uint(i)).Return(nil)
+
+			engine := gin.Default()
+			engine.POST("/api/v1/class/:classId/user/:userId", setUserLogin, classRest.AdmAddUserToClass)
+
+			response := httptest.NewRecorder()
+			request, err := http.NewRequest("POST", fmt.Sprintf("/api/v1/class/%d/user/%[1]d", i), nil)
+			if err != nil {
+
+				t.Fatal(err.Error())
+
+			}
+			engine.ServeHTTP(response, request)
+
+			var jsonResponse map[string]any
+			err = json.Unmarshal(response.Body.Bytes(), &jsonResponse)
+			if err != nil {
+
+				t.Fatal(err.Error())
+
+			}
+
+			assert.Equal(t, http.StatusCreated, response.Code, "status code should be equal")
+			assert.Equal(t, "successfully add user to class", jsonResponse["message"], "message should be equal")
+			assert.Equal(t, "success", jsonResponse["status"], "status should be equal")
+
+			functionCall.Unset()
+
+		})
+
+	}
+
+}
