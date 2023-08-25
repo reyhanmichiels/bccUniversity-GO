@@ -55,7 +55,15 @@ func (classUseCaseMock *ClassUseCaseMock) AdmAddUserToClassUseCase(loginUser ent
 
 func (classUseCaseMock *ClassUseCaseMock) CreateClassUseCase(userInput entity.CreateUpdateClassBind, loginUser entity.User) (entity.CreateUpdateClassApi, interface{}) {
 
-	return entity.CreateUpdateClassApi{}, nil
+	args := classUseCaseMock.Mock.Called(userInput, loginUser)
+
+	if args[1] != nil {
+
+		return entity.CreateUpdateClassApi{}, args[1].(library.ErrorObject)
+
+	}
+
+	return args[0].(entity.CreateUpdateClassApi), nil
 
 }
 
