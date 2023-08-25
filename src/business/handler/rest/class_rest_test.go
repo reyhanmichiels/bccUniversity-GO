@@ -291,3 +291,44 @@ func TestRemoveUserFromClassPath4(t *testing.T) {
 	}
 
 }
+
+func TestRemoveUserFromClassPath5(t *testing.T) {
+
+	for i := 1; i <= 5; i++ {
+
+		t.Run(fmt.Sprintf("path 5 remove user from class testing %d", i), func(t *testing.T) {
+
+			functionCall := classUsecaseMock.Mock.On("RemoveUserFromClassUseCase", getLoginUser(), uint(i), uint(i)).Return(nil)
+
+			engine := gin.Default()
+			engine.DELETE("/api/v1/class/:classId/user/:userId", setUserLogin, classRest.RemoveUserFromClass)
+
+			response := httptest.NewRecorder()
+			request, err := http.NewRequest("DELETE", fmt.Sprintf("/api/v1/class/%d/user/%[1]d", i), nil)
+
+			if err != nil {
+
+				t.Fatal(err.Error())
+
+			}
+			engine.ServeHTTP(response, request)
+
+			var jsonResponse map[string]any
+			err = json.Unmarshal(response.Body.Bytes(), &jsonResponse)
+			if err != nil {
+
+				t.Fatal(err.Error())
+
+			}
+
+			assert.Equal(t, http.StatusOK, response.Code, "status code should be equal")
+			assert.Equal(t, "successfully remove user from class", jsonResponse["message"], "message should be equal")
+			assert.Equal(t, "success", jsonResponse["status"], "status should be equal")
+
+			functionCall.Unset()
+
+		})
+
+	}
+
+}
