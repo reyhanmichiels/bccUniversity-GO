@@ -1191,7 +1191,7 @@ func TestDeleteClassPath1(t *testing.T) {
 
 }
 
-func TestDeletePath2(t *testing.T) {
+func TestDeleteClassPath2(t *testing.T) {
 
 	for i := 1; i <= 5; i++ {
 
@@ -1228,7 +1228,7 @@ func TestDeletePath2(t *testing.T) {
 
 }
 
-func TestDeletePath3(t *testing.T) {
+func TestDeleteClassPath3(t *testing.T) {
 
 	for i := 1; i <= 5; i++ {
 
@@ -1274,7 +1274,7 @@ func TestDeletePath3(t *testing.T) {
 
 }
 
-func TestDeletePath4(t *testing.T) {
+func TestDeleteClassPath4(t *testing.T) {
 
 	for i := 1; i <= 5; i++ {
 
