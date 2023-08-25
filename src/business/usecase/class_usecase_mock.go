@@ -27,6 +27,14 @@ func (classUseCaseMock *ClassUseCaseMock) GetAllClassUseCase() ([]entity.ClassAp
 
 func (classUseCaseMock *ClassUseCaseMock) RemoveUserFromClassUseCase(loginUser entity.User, classId uint, userId uint) interface{} {
 
+	args := classUseCaseMock.Mock.Called(loginUser, classId, userId)
+
+	if args[0] != nil {
+
+		return args[0].(library.ErrorObject)
+
+	}
+
 	return nil
 
 }
