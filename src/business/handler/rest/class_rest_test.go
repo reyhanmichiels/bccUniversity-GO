@@ -337,7 +337,7 @@ func TestAdmAddUserToClassPath1(t *testing.T) {
 
 	for i := 1; i <= 5; i++ {
 
-		t.Run(fmt.Sprintf("path 1 remove user from class testing %d", i), func(t *testing.T) {
+		t.Run(fmt.Sprintf("path 1 admin add user to class testing %d", i), func(t *testing.T) {
 
 			engine := gin.Default()
 			engine.POST("/api/v1/class/:classId/user/:userId", classRest.RemoveUserFromClass)
@@ -373,7 +373,7 @@ func TestAdmAddUserToClassPath2(t *testing.T) {
 
 	for i := 1; i <= 5; i++ {
 
-		t.Run(fmt.Sprintf("path 2 remove user from class testing %d", i), func(t *testing.T) {
+		t.Run(fmt.Sprintf("path 2 admin add user to class testing %d", i), func(t *testing.T) {
 
 			engine := gin.Default()
 			engine.POST("/api/v1/class/:classId/user/:userId", classRest.RemoveUserFromClass)
@@ -409,7 +409,7 @@ func TestAdmAddUserToClassPath3(t *testing.T) {
 
 	for i := 1; i <= 5; i++ {
 
-		t.Run(fmt.Sprintf("path 3 remove user from class testing %d", i), func(t *testing.T) {
+		t.Run(fmt.Sprintf("path 3 admin add user to class testing %d", i), func(t *testing.T) {
 
 			engine := gin.Default()
 			engine.POST("/api/v1/class/:classId/user/:userId", classRest.RemoveUserFromClass)
@@ -435,6 +435,51 @@ func TestAdmAddUserToClassPath3(t *testing.T) {
 			assert.Equal(t, "error", jsonResponse["status"], "status should be equal")
 			assert.Equal(t, "failed to generate login user", jsonResponse["message"], "message should be equal")
 			assert.Equal(t, "you are not authorized", jsonResponse["error"], "error should be equal")
+
+		})
+
+	}
+
+}
+
+func TestAdmAddUserToClassPath4(t *testing.T) {
+
+	for i := 1; i <= 5; i++ {
+
+		t.Run(fmt.Sprintf("path 4 admin add user to class testing %d", i), func(t *testing.T) {
+
+			errObject := library.ErrorObject{
+				Code:    http.StatusInternalServerError,
+				Message: "test",
+				Err:     errors.New("test"),
+			}
+			functionCall := classUsecaseMock.Mock.On("AdmAddUserToClassUseCase", getLoginUser(), uint(i), uint(i)).Return(errObject)
+
+			engine := gin.Default()
+			engine.POST("/api/v1/class/:classId/user/:userId", setUserLogin, classRest.AdmAddUserToClass)
+
+			response := httptest.NewRecorder()
+			request, err := http.NewRequest("POST", fmt.Sprintf("/api/v1/class/%d/user/%[1]d", i), nil)
+			if err != nil {
+
+				t.Fatal(err.Error())
+
+			}
+			engine.ServeHTTP(response, request)
+
+			var jsonResponse map[string]any
+			err = json.Unmarshal(response.Body.Bytes(), &jsonResponse)
+			if err != nil {
+
+				t.Fatal(err.Error())
+
+			}
+
+			assert.Equal(t, http.StatusInternalServerError, response.Code, "status code should be equal")
+			assert.Equal(t, "test", jsonResponse["message"], "message should be equal")
+			assert.Equal(t, "error", jsonResponse["status"], "status should be equal")
+
+			functionCall.Unset()
 
 		})
 
