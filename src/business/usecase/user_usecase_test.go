@@ -4,6 +4,7 @@ import (
 	"bcc-university/src/business/entity"
 	"bcc-university/src/business/repository"
 	"bcc-university/src/sdk/library"
+	"errors"
 	"fmt"
 	"net/http"
 	"strings"
@@ -52,6 +53,62 @@ func TestRegistrationUseCasePath1(t *testing.T) {
 			resultErrObject := resultErr.(library.ErrorObject)
 			assert.Equal(t, http.StatusInternalServerError, resultErrObject.Code, "status code should be equal")
 			assert.Equal(t, "failed to generate hash password", resultErrObject.Message, "message should be equal")
+
+		})
+
+	}
+
+}
+
+func TestRegistrationUseCasePath2(t *testing.T) {
+
+	input := []entity.RegistBind{
+		{
+			Password: "test",
+			Name:     "test",
+			Username: "test",
+			Email:    "test@test.com",
+		},
+		{
+			Password: "test",
+			Name:     "test",
+			Username: "test",
+			Email:    "test@test.com",
+		},
+		{
+			Password: "test",
+			Name:     "test",
+			Username: "test",
+			Email:    "test@test.com",
+		},
+		{
+			Password: "test",
+			Name:     "test",
+			Username: "test",
+			Email:    "test@test.com",
+		},
+		{
+			Password: "test",
+			Name:     "test",
+			Username: "test",
+			Email:    "test@test.com",
+		},
+	}
+
+	for i, v := range input {
+
+		t.Run(fmt.Sprintf("path 2 registration usecase testing %d", i), func(t *testing.T) {
+
+			functionCall := userRepositoryMock.Mock.On("CreateUser").Return(errors.New("test"))
+
+			_, resultErr := userUseCase.RegistrationUseCase(v)
+
+			resultErrObject := resultErr.(library.ErrorObject)
+			assert.Equal(t, http.StatusInternalServerError, resultErrObject.Code, "status code should be equal")
+			assert.Equal(t, "test", resultErrObject.Err.Error(), "error code should be equal")
+			assert.Equal(t, "failed to create user", resultErrObject.Message, "message code should be equal")
+
+			functionCall.Unset()
 
 		})
 
