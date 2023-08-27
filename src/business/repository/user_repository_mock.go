@@ -12,6 +12,14 @@ type UserRepositoryMock struct {
 
 func (userRepositoryMock *UserRepositoryMock) CreateUser(user *entity.User) error {
 
+	args := userRepositoryMock.Mock.Called()
+
+	if args[0] != nil {
+
+		return args[0].(error)
+
+	}
+
 	return nil
 
 }
@@ -41,12 +49,8 @@ func (userRepositoryMock *UserRepositoryMock) UpdateUser(user *entity.User, upda
 
 func (userRepositoryMock *UserRepositoryMock) AddUserToClass(user *entity.User, class *entity.Class) {
 
-	
-
 }
 
 func (userRepositoryMock *UserRepositoryMock) DropUserFromClass(user *entity.User, class *entity.Class) {
-
-	
 
 }
