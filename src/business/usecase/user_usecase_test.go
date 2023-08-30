@@ -115,3 +115,58 @@ func TestRegistrationUseCasePath2(t *testing.T) {
 	}
 
 }
+
+func TestRegistrationUseCasePath3(t *testing.T) {
+
+	input := []entity.RegistBind{
+		{
+			Password: "test",
+			Name:     "test",
+			Username: "test",
+			Email:    "test@test.com",
+		},
+		{
+			Password: "test",
+			Name:     "test",
+			Username: "test",
+			Email:    "test@test.com",
+		},
+		{
+			Password: "test",
+			Name:     "test",
+			Username: "test",
+			Email:    "test@test.com",
+		},
+		{
+			Password: "test",
+			Name:     "test",
+			Username: "test",
+			Email:    "test@test.com",
+		},
+		{
+			Password: "test",
+			Name:     "test",
+			Username: "test",
+			Email:    "test@test.com",
+		},
+	}
+
+	for i, v := range input {
+
+		t.Run(fmt.Sprintf("path 3 registration usecase testing %d", i), func(t *testing.T) {
+
+			functionCall := userRepositoryMock.Mock.On("CreateUser").Return(nil)
+
+			resultData, resultErr := userUseCase.RegistrationUseCase(v)
+			assert.Nil(t, resultErr, "errod should be nil")
+			assert.Equal(t, "test", resultData.Name, "name should be equal")
+			assert.Equal(t, "test", resultData.Username, "username should be equal")
+			assert.Equal(t, "test@test.com", resultData.Email, "email should be equal")
+
+			functionCall.Unset()
+
+		})
+
+	}
+
+}
