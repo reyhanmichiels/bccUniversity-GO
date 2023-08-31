@@ -1,0 +1,26 @@
+version: "3.8"
+
+services:
+  db-bcc-university:
+    container_name: db-bcc-university
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_PASSWORD: password
+      MYSQL_USER: reyhanmichiels
+      MYSQL_DATABASE: bcc-university
+    ports:
+      - 3307:3306
+    volumes:
+      - bcc-university-volumes:/var/lib/mysql
+    networks:
+      - bcc-university-networks
+
+volumes:
+  bcc-university-volumes:
+    name: "bcc-university-volumes"
+
+networks:
+  bcc-university-networks:
+    name: "bcc-university-networks"
+    driver: bridge
