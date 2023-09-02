@@ -1,16 +1,30 @@
 version: "3.8"
 
 services:
+  app-bcc-university:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: app-bcc-university
+    image: bcc-university
+    ports:
+      - "8080:8080"
+    networks:
+      - bcc-university-networks
+    depends_on:
+      - db-bcc-university
+    restart: on-failure
+
   db-bcc-university:
     container_name: db-bcc-university
     image: mysql:latest
     environment:
       MYSQL_ROOT_PASSWORD: password
-      MYSQL_PASSWORD: password
-      MYSQL_USER: reyhanmichiels
-      MYSQL_DATABASE: bcc-university
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_DATABASE: ${DB_NAME}
     ports:
-      - 3307:3306
+      - "${DB_PORT}:3306"
     volumes:
       - bcc-university-volumes:/var/lib/mysql
     networks:
